@@ -38,7 +38,7 @@ function FormularioTicket({ onCerrar, onGuardar, ticketEditar }) {
     'Información': ['Consulta técnica', 'Capacitación', 'Documentación'],
     'Cambio': ['Equipo', 'Ubicación', 'Configuración']
   };
-
+  
   const prioridades = ['Alta', 'Media', 'Baja'];
   
   const estados = [
@@ -53,7 +53,7 @@ function FormularioTicket({ onCerrar, onGuardar, ticketEditar }) {
     'Escalamiento a Fábrica'
   ];
 
-  const agentes = ['Sin asignar', ' García', ' Ruiz', ' López', 'Pedro Sánchez'];
+  const agentes = ['Sin asignar', 'García', 'Ruiz', 'López', 'Pedro Sánchez'];
 
   // Manejar cambios en los campos
   const manejarCambio = (campo, valor) => {
