@@ -1,4 +1,4 @@
-// Login.js  de inicio de sesión con roles
+// Login.js de inicio de sesión con roles
 import React, { useState } from 'react';
 import { useAutenticacion } from '../../contextos/ContextoAutenticacion';
 import './Login.css';
@@ -10,7 +10,7 @@ function Login() {
 
   const { iniciarSesion } = useAutenticacion();
 
-  const manejarEnvio = (evento) => {
+  const manejarEnvio=(evento) => {
     evento.preventDefault();
     
     if (!correo || !contrasena) {
@@ -80,5 +80,4 @@ function Login() {
     </div>
   );
 }
-
 export default Login;

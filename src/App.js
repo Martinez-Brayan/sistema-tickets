@@ -13,6 +13,7 @@ import Usuarios from './paginas/Usuarios';
 import CalendarioPage from './paginas/CalendarioPage';
 import MiCalendarioPage from './paginas/MiCalendarioPage';
 import CheckInOutPage from './paginas/CheckInOutPage';
+import ReportesPage from './paginas/ReportesPage';
 
 // Componente temporal para páginas en construcción
 function PaginaEnConstruccion({ titulo }) {
@@ -194,7 +195,7 @@ function AppContenido() {
       case 'calendario':
         return <CalendarioPage />;
       case 'reportes':
-        return <PaginaEnConstruccion titulo="Reportes" />;
+        return <ReportesPage />;
       case 'configuracion':
         return <PaginaEnConstruccion titulo="Configuración" />;
       default:
