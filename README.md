@@ -1,70 +1,85 @@
-# Getting Started with Create React App
+# Sistema de Gestión de Tickets (Help Desk)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Sistema integral para la administración de incidencias y solicitudes de soporte, diseñado con una arquitectura basada en roles para optimizar el flujo de trabajo entre administradores, agentes y clientes.
 
-## Available Scripts
+## 🚀 Características Principales
 
-In the project directory, you can run:
+### 👥 Gestión de Roles y Permisos
+El sistema tiene tres niveles de acceso diferenciados:
+*   **Administrador**: Control total del sistema, gestión de usuarios y supervisión global.
+*   **Agente de Soporte**: Gestión y resolución de tickets asignados, acceso al dashboard de productividad.
+*   **Cliente**: Creación de nuevos tickets, seguimiento de estado y comunicación con agentes.
 
-### `npm start`
+### 🎫 Sistema de Tickets Avanzado
+Configuración  para incidencias correctamente:
+*   **Tipos**: Incidente y Solicitud.
+*   **Prioridades**: Alta, Media, Baja.
+*   **Estados del Ciclo de Vida**:
+    *   Abierto / En Proceso / Resuelto
+    *   En Espera de Usuario / Respondido Usuario
+    *   Proyectos (En Proceso/Culminado)
+    *   Escalamiento a Fábrica
+*   **Categorización**: Jerarquía completa de Categoría -> Subcategoría (ej. Hardware -> Impresora, Red -> VPN).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 💬 Comunicación en Tiempo Real
+*   Chat integrado para comunicación directa entre Agentes y Clientes.
+*   Implementado con **Socket.io** para mensajería instantánea sin recargas.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🔐 Credenciales de Acceso (Entorno de Pruebas)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+El sistema cuenta con usuarios pre-configurados para facilitar el testing:
 
-### `npm run build`
+| Rol | Correo Electrónico | Contraseña |
+| :--- | :--- | :--- |
+| **Administrador** | `admin@helpdesk.com` | `admin123` |
+| **Agente** | `agente@helpdesk.com` | `agente123` |
+| **Cliente** | `cliente@helpdesk.com` | `cliente123` |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🛠️ Stack Tecnológico
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+*   **Core**: React 19
+*   **Navegación**: React Router DOM v7
+*   **Comunicación**: Axios (HTTP), Socket.io Client (WebSockets)
+*   **Estilos**: CSS Modules y CSS puro para componentes aislados.
+*   **Estado Global**: Context API (ContextoAutenticacion).
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 📂 Estructura del Proyecto
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```text
+src/
+├── componentes/
+│   ├── autenticacion/  # Login y protección de rutas
+│   ├── chat/           # Interfaz de chat real-time
+│   ├── comunes/        # Layouts específicos por rol (Admin/Agente/Cliente)
+│   ├── tickets/        # Formularios y Listados de tickets
+│   └── usuarios/       # Gestión de usuarios
+├── contextos/          # Lógica de estado global (Auth)
+├── paginas/            # Vistas principales (Dashboard, Tickets, Chat)
+└── servicios/          # Conexión con APIs externas
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## ⚡ Instalación y Despliegue
 
-## Learn More
+1.  **Instalar dependencias:**
+    ```bash
+    npm install
+    ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+2.  **Iniciar servidor de desarrollo:**
+    ```bash
+    npm start
+    ```
+    Accede a [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+3.  **Compilar para producción:**
+    ```bash
+    npm run build
+    ```

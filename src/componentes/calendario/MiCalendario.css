@@ -1,0 +1,254 @@
+.mi-calendario {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Resumen del dia */
+.resumen-dia {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.resumen-tarjeta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+}
+
+.resumen-tarjeta.hoy { 
+  background: linear-gradient(135deg, #3498db, #2980b9);
+ }
+
+.resumen-tarjeta.campo { 
+  background: linear-gradient(135deg, #f39c12, #e67e22); 
+}
+
+.resumen-tarjeta.reunion { 
+  background: linear-gradient(135deg, #27ae60, #229954); 
+}
+
+.resumen-icono { 
+  font-size: 32px; 
+  opacity: 0.9; 
+}
+
+.resumen-info h3 { 
+  margin: 0; 
+  font-size: 24px;
+ }
+.resumen-info p 
+{ margin: 5px 0 0;
+   opacity: 0.9; 
+   font-size: 14px;
+   }
+
+/* Contenido principal */
+.calendario-contenido {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .calendario-contenido {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Calendario */
+.calendario-principal {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.calendario-encabezado h2 { margin: 0 0 20px; color: #1a1a2e; }
+
+.calendario-controles {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.navegacion-fecha {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.navegacion-fecha button {
+  background: #f0f0f0;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.navegacion-fecha button:hover { background: #e0e0e0; }
+
+.navegacion-fecha h3 { margin: 0; min-width: 160px; text-align: center; }
+
+.boton-hoy {
+  padding: 8px 16px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.boton-hoy:hover { background: #2980b9; }
+
+.calendario-grid {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dias-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #f8f9fa;
+}
+
+.dia-semana {
+  padding: 12px;
+  text-align: center;
+  font-weight: 600;
+  color: #666;
+  font-size: 13px;
+}
+
+.dias-mes {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.dia-celda {
+  min-height: 70px;
+  padding: 8px;
+  border: 1px solid #f0f0f0;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dia-celda.otro-mes { background: #fafafa; }
+.dia-celda.otro-mes .numero-dia { color: #ccc; }
+
+.dia-celda.hoy { background: #e3f2fd; }
+.dia-celda.hoy .numero-dia {
+  background: #3498db;
+  color: white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.numero-dia { font-weight: 500; font-size: 14px; }
+
+.eventos-dia {
+  display: flex;
+  gap: 4px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.evento-punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.evento-punto.campo { background: #f39c12; }
+.evento-punto.reunion { background: #27ae60; }
+
+/* Proximos eventos */
+.proximos-eventos {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.proximos-eventos h3 { margin: 0 0 20px; color: #1a1a2e; }
+
+.lista-eventos {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.sin-eventos {
+  text-align: center;
+  color: #999;
+  padding: 30px;
+}
+
+.evento-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid;
+  position: relative;
+}
+
+.evento-item.campo { background: #fff8e1; border-color: #f39c12; }
+.evento-item.reunion { background: #e8f5e9; border-color: #27ae60; }
+
+.evento-fecha {
+  text-align: center;
+  min-width: 45px;
+}
+
+.evento-fecha .dia {
+  display: block;
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+}
+
+.evento-fecha .mes {
+  font-size: 11px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.evento-detalle { flex: 1; }
+.evento-detalle h4 { margin: 0 0 8px; font-size: 14px; color: #333; }
+.evento-detalle p {
+  margin: 4px 0;
+  font-size: 12px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tipo-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 500;
+  color: white;
+}
+
+.tipo-badge.campo { background: #f39c12; }
+.tipo-badge.reunion { background: #27ae60; }

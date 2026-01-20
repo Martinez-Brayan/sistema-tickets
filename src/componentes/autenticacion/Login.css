@@ -1,0 +1,52 @@
+/* Sección de ayuda con usuarios de prueba */
+.login-ayuda {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.login-ayuda p {
+  margin: 0 0 15px 0;
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+}
+
+.usuarios-prueba {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.usuario-prueba {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.rol-badge {
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.rol-badge.admin {
+  background: #9b59b6;
+  color: white;
+}
+
+.rol-badge.agente {
+  background: #3498db;
+  color: white;
+}
+
+.rol-badge.cliente {
+  background: #27ae60;
+  color: white;
+}

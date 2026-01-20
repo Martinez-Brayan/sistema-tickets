@@ -1,0 +1,341 @@
+/* FormularioTicket.css - Estilos del formulario de tickets */
+
+.formulario-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.formulario-contenedor {
+  background: white;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Encabezado */
+.formulario-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+}
+
+.formulario-encabezado h2 {
+  margin: 0;
+  color: #1a1a2e;
+}
+
+.boton-cerrar {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.3s;
+}
+
+.boton-cerrar:hover {
+  color: #d32f2f;
+}
+
+/* Cuerpo del formulario */
+.formulario-cuerpo {
+  padding: 25px;
+}
+
+.formulario-grupo {
+  margin-bottom: 20px;
+}
+
+.formulario-grupo label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 500;
+}
+
+.formulario-grupo input,
+.formulario-grupo select,
+.formulario-grupo textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+
+.formulario-grupo input:focus,
+.formulario-grupo select:focus,
+.formulario-grupo textarea:focus {
+  outline: none;
+  border-color: #4a90a4;
+}
+
+.formulario-grupo input.error,
+.formulario-grupo select.error {
+  border-color: #d32f2f;
+}
+
+.formulario-grupo select:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.formulario-grupo textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.mensaje-error {
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+/* Filas de dos columnas */
+.formulario-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 600px) {
+  .formulario-fila {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Botones de acción */
+.formulario-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.boton-cancelar {
+  padding: 12px 25px;
+  background: #f5f5f5;
+  color: #666;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.boton-cancelar:hover {
+  background: #e0e0e0;
+}
+
+.boton-guardar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 25px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.boton-guardar:hover {
+  background: #218838;
+}/* FormularioTicket.css - Estilos del formulario de tickets */
+
+.formulario-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.formulario-contenedor {
+  background: white;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Encabezado */
+.formulario-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+}
+
+.formulario-encabezado h2 {
+  margin: 0;
+  color: #1a1a2e;
+}
+
+.boton-cerrar {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.3s;
+}
+
+.boton-cerrar:hover {
+  color: #d32f2f;
+}
+
+/* Cuerpo del formulario */
+.formulario-cuerpo {
+  padding: 25px;
+}
+
+.formulario-grupo {
+  margin-bottom: 20px;
+}
+
+.formulario-grupo label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 500;
+}
+
+.formulario-grupo input,
+.formulario-grupo select,
+.formulario-grupo textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+
+.formulario-grupo input:focus,
+.formulario-grupo select:focus,
+.formulario-grupo textarea:focus {
+  outline: none;
+  border-color: #4a90a4;
+}
+
+.formulario-grupo input.error,
+.formulario-grupo select.error {
+  border-color: #d32f2f;
+}
+
+.formulario-grupo select:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.formulario-grupo textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.mensaje-error {
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+/* Filas de dos columnas */
+.formulario-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 600px) {
+  .formulario-fila {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Botones de acción */
+.formulario-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.boton-cancelar {
+  padding: 12px 25px;
+  background: #f5f5f5;
+  color: #666;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.boton-cancelar:hover {
+  background: #e0e0e0;
+}
+
+.boton-guardar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 25px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.boton-guardar:hover {
+  background: #218838;
+}
