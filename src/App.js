@@ -105,53 +105,156 @@ function NuevaSolicitud() {
 
 // Lista de tickets del cliente
 function MisTicketsCliente() {
-  const tickets = [
-    { id: 101, titulo: 'No puedo acceder al sistema', estado: 'En Proceso', fecha: '17/01/2026', agente: 'Ca' },
-    { id: 98, titulo: 'Error al generar reporte', estado: 'Resuelto', fecha: '15/01/2026', agente: 'María García' },
-    { id: 95, titulo: 'Solicitud de nuevo acceso', estado: 'Resuelto', fecha: '10/01/2026', agente: ' Ruiz' },
-  ];
+  const [filtroEstado, setFiltroEstado] = useState('todos');
+  
+  // Datos vacios - vendran de Supabase
+  const [tickets, setTickets] = useState([]);
+
+  const ticketsFiltrados = tickets.filter(ticket => {
+    if (filtroEstado === 'todos') return true;
+    if (filtroEstado === 'activos') return ['Abierto', 'En Proceso', 'En Espera de Usuario'].includes(ticket.estado);
+    if (filtroEstado === 'cerrados') return ['Resuelto', 'Cerrado'].includes(ticket.estado);
+    return ticket.estado === filtroEstado;
+  });
 
   return (
-    <div>
-      <h1 style={{ color: '#1a1a2e', marginBottom: '20px' }}>Mis Tickets</h1>
-      <div style={{ background: 'white', borderRadius: '10px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#f8f9fa' }}>
-              <th style={{ padding: '15px', textAlign: 'left' }}>ID</th>
-              <th style={{ padding: '15px', textAlign: 'left' }}>Título</th>
-              <th style={{ padding: '15px', textAlign: 'left' }}>Estado</th>
-              <th style={{ padding: '15px', textAlign: 'left' }}>Agente</th>
-              <th style={{ padding: '15px', textAlign: 'left' }}>Fecha</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tickets.map(ticket => (
-              <tr key={ticket.id} style={{ borderBottom: '1px solid #eee' }}>
-                <td style={{ padding: '15px' }}>#{ticket.id}</td>
-                <td style={{ padding: '15px' }}>{ticket.titulo}</td>
-                <td style={{ padding: '15px' }}>
-                  <span style={{ 
-                    padding: '5px 12px', 
-                    borderRadius: '20px', 
-                    fontSize: '12px',
-                    background: ticket.estado === 'Resuelto' ? '#e8f5e9' : '#fff3e0',
-                    color: ticket.estado === 'Resuelto' ? '#388e3c' : '#f57c00'
-                  }}>
-                    {ticket.estado}
-                  </span>
-                </td>
-                <td style={{ padding: '15px' }}>{ticket.agente}</td>
-                <td style={{ padding: '15px' }}>{ticket.fecha}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="mis-tickets-cliente">
+      <div className="mis-tickets-encabezado">
+        <h1>Mis Tickets</h1>
+        <select 
+          value={filtroEstado} 
+          onChange={(e) => setFiltroEstado(e.target.value)}
+          className="filtro-select"
+        >
+          <option value="todos">Todos</option>
+          <option value="activos">Activos</option>
+          <option value="cerrados">Cerrados</option>
+          <option value="Abierto">Abierto</option>
+          <option value="En Proceso">En Proceso</option>
+          <option value="En Espera de Usuario">En Espera</option>
+          <option value="Resuelto">Resuelto</option>
+          <option value="Cerrado">Cerrado</option>
+        </select>
       </div>
+
+      {tickets.length === 0 ? (
+        <div className="sin-tickets">
+          <p>No tienes tickets registrados</p>
+        </div>
+      ) : ticketsFiltrados.length === 0 ? (
+        <div className="sin-tickets">
+          <p>No hay tickets con el filtro seleccionado</p>
+        </div>
+      ) : (
+        <div className="tickets-lista">
+          {ticketsFiltrados.map(ticket => (
+            <div key={ticket.id} className="ticket-card">
+              <div className="ticket-header">
+                <span className="ticket-id">#{ticket.id}</span>
+                <span className={`ticket-estado ${ticket.estado.toLowerCase().replace(/ /g, '-')}`}>
+                  {ticket.estado}
+                </span>
+              </div>
+              <h3 className="ticket-titulo">{ticket.titulo}</h3>
+              <div className="ticket-detalles">
+                <span>Agente: {ticket.agente || 'Sin asignar'}</span>
+                <span>Fecha: {ticket.fecha}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <style>{`
+        .mis-tickets-cliente {
+          padding: 10px;
+        }
+        .mis-tickets-encabezado {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        .mis-tickets-encabezado h1 {
+          margin: 0;
+          color: #1a1a2e;
+        }
+        .filtro-select {
+          padding: 10px 15px;
+          border: 2px solid #e0e0e0;
+          border-radius: 6px;
+          font-size: 14px;
+          cursor: pointer;
+        }
+        .sin-tickets {
+          text-align: center;
+          padding: 60px 20px;
+          background: white;
+          border-radius: 10px;
+          color: #999;
+        }
+        .tickets-lista {
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+        }
+        .ticket-card {
+          background: white;
+          border-radius: 10px;
+          padding: 20px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .ticket-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+        }
+        .ticket-id {
+          font-weight: bold;
+          color: #3498db;
+        }
+        .ticket-estado {
+          padding: 5px 12px;
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: 500;
+        }
+        .ticket-estado.abierto {
+          background: #e3f2fd;
+          color: #1976d2;
+        }
+        .ticket-estado.en-proceso {
+          background: #fff3e0;
+          color: #f57c00;
+        }
+        .ticket-estado.en-espera-de-usuario {
+          background: #f3e5f5;
+          color: #7b1fa2;
+        }
+        .ticket-estado.resuelto {
+          background: #e8f5e9;
+          color: #388e3c;
+        }
+        .ticket-estado.cerrado {
+          background: #eceff1;
+          color: #607d8b;
+        }
+        .ticket-titulo {
+          margin: 0 0 10px;
+          font-size: 16px;
+          color: #333;
+        }
+        .ticket-detalles {
+          display: flex;
+          gap: 20px;
+          font-size: 13px;
+          color: #666;
+        }
+      `}</style>
     </div>
   );
 }
-
 // Componente interno que usa el contexto
 function AppContenido() {
   const { autenticado, usuario } = useAutenticacion();
@@ -212,8 +315,6 @@ function AppContenido() {
         return <MisTicketsCliente />;
       case 'chat':
         return <ChatPage />;
-      case 'historial':
-        return <aun no hecho="Historial de tickets" />;
       default:
         return <NuevaSolicitud />;
     }

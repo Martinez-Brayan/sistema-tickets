@@ -6,15 +6,23 @@
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   padding: 20px;
 }
+
 .rol-badge.agente {
   background-color: #3498db;
   color: white;
 }
+
 .rol-badge.cliente {
   background-color: #2ecc71;
   color: white;
   
 }
+span {
+  font-size: 15px;
+  color: black;
+  margin-top: 10px;
+}
+
 .rol-badge{
   display: grid;
   justify-content: space-around;
@@ -25,10 +33,12 @@
   margin-right: 10px;
   margin-bottom: 10px;;
 }
+
 .rol-badge.admin {
   background-color: #e74c3c;
   color: white;
 }
+
 .login-caja {
   background: white;
   padding: 40px;

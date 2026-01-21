@@ -1,6 +1,5 @@
-// LayoutCliente.js - Layout para Cliente
 import React, { useState } from 'react';
-import { FaPlus, FaTicketAlt, FaComments, FaSignOutAlt, FaBars, FaHistory } from 'react-icons/fa';
+import { FaPlus, FaTicketAlt, FaComments, FaSignOutAlt, FaBars } from 'react-icons/fa';
 import { useAutenticacion } from '../../contextos/ContextoAutenticacion';
 import './Layout.css';
 
@@ -44,20 +43,12 @@ function LayoutCliente({ children, onCambiarPagina, paginaActual }) {
             <FaComments className="menu-icono" />
             {menuAbierto && <span>Chat con Soporte</span>}
           </button>
-
-          <button 
-            onClick={() => onCambiarPagina('historial')} 
-            className={`menu-enlace ${paginaActual === 'historial' ? 'activo' : ''}`}
-          >
-            <FaHistory className="menu-icono" />
-            {menuAbierto && <span>Historial</span>}
-          </button>
         </nav>
 
         <div className="menu-pie">
           <button onClick={cerrarSesion} className="menu-enlace boton-salir">
             <FaSignOutAlt className="menu-icono" />
-            {menuAbierto && <span>Cerrar Sesión</span>}
+            {menuAbierto && <span>Cerrar Sesion</span>}
           </button>
         </div>
       </aside>
