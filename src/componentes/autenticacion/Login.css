@@ -1,52 +1,121 @@
-/* Sección de ayuda con usuarios de prueba */
-.login-ayuda {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
+.login-contenedor {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 20px;
+}
+.rol-badge.agente {
+  background-color: #3498db;
+  color: white;
+}
+.rol-badge.cliente {
+  background-color: #2ecc71;
+  color: white;
+  
+}
+.rol-badge{
+  display: grid;
+  justify-content: space-around;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-right: 10px;
+  margin-bottom: 10px;;
+}
+.rol-badge.admin {
+  background-color: #e74c3c;
+  color: white;
+}
+.login-caja {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
 }
 
-.login-ayuda p {
-  margin: 0 0 15px 0;
+.login-titulo {
+  text-align: center;
+  margin: 0 0 10px;
+  font-size: 32px;
+  color: #1a1a2e;
+}
+
+.login-subtitulo {
+  text-align: center;
+  margin: 0 0 30px;
+  font-size: 18px;
   color: #666;
+  font-weight: normal;
+}
+
+.login-error {
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
   font-size: 14px;
   text-align: center;
 }
 
-.usuarios-prueba {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.login-campo {
+  margin-bottom: 20px;
 }
 
-.usuario-prueba {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  background: #f8f9fa;
-  border-radius: 5px;
-  font-size: 12px;
+.login-campo label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
 }
 
-.rol-badge {
-  padding: 3px 8px;
-  border-radius: 3px;
-  font-weight: bold;
-  font-size: 10px;
-  text-transform: uppercase;
+.login-campo input {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 15px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
 }
 
-.rol-badge.admin {
-  background: #9b59b6;
+.login-campo input:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.login-campo input:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.login-boton {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #27ae60, #219a52);
   color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.rol-badge.agente {
-  background: #3498db;
-  color: white;
+.login-boton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(39, 174, 96, 0.4);
 }
 
-.rol-badge.cliente {
-  background: #27ae60;
-  color: white;
+.login-boton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
