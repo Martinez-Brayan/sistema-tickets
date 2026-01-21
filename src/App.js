@@ -15,6 +15,7 @@ import MiCalendarioPage from './paginas/MiCalendarioPage';
 import CheckInOutPage from './paginas/CheckInOutPage';
 import ReportesPage from './paginas/ReportesPage';
 import ConfiguracionPage from './paginas/ConfiguracionPage';
+import ListaTickets from './componentes/tickets/ListaTickets';
 
 
 // Dashboard  para Agente
@@ -274,7 +275,7 @@ function AppContenido() {
       case 'inicio':
         return <Dashboard />;
       case 'tickets':
-        return <Tickets />;
+        return <ListaTickets titulo="Todos los tickets" />;
       case 'usuarios':
         return <Usuarios />;
       case 'calendario':
@@ -294,7 +295,7 @@ function AppContenido() {
       case 'inicio':
         return <DashboardAgente />;
       case 'mis-tickets':
-        return <Tickets />;
+        return <ListaTickets soloLectura={true} titulo="Mis tickets Asignados" />;
       case 'chat':
         return <ChatPage />;
       case 'mi-calendario':
