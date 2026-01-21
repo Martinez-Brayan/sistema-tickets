@@ -107,14 +107,12 @@ function Chat() {
       });
     }, 2000);
   };
-
   return (
     <div className="chat-contenedor">
       <div className="chat-lista">
         <div className="chat-lista-encabezado">
           <h3>Conversaciones</h3>
         </div>
-        
         <div className="chat-lista-conversaciones">
           {conversaciones.map(conv => (
             <div 

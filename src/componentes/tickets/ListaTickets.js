@@ -31,7 +31,7 @@ function ListaTickets({ onNuevoTicket, onVerTicket }) {
       prioridad: 'Media',
       categoria: 'Solicitud',
       solicitante: 'Ana López',
-      agente: 'Carlos Ruiz',
+      agente: ' Ruiz',
       fechaCreacion: '2026-01-16',
       fechaActualizacion: '2026-01-17'
     },
@@ -42,7 +42,7 @@ function ListaTickets({ onNuevoTicket, onVerTicket }) {
       estado: 'Resuelto',
       prioridad: 'Baja',
       categoria: 'Solicitud',
-      solicitante: 'Pedro Sánchez',
+      solicitante: ' Sánchez',
       agente: 'María García',
       fechaCreacion: '2026-01-15',
       fechaActualizacion: '2026-01-16'
@@ -54,8 +54,8 @@ function ListaTickets({ onNuevoTicket, onVerTicket }) {
       estado: 'En Espera de Usuario',
       prioridad: 'Media',
       categoria: 'Incidente',
-      solicitante: 'Laura Martínez',
-      agente: 'Carlos Ruiz',
+      solicitante: ' Martínez',
+      agente: ' Ruiz',
       fechaCreacion: '2026-01-14',
       fechaActualizacion: '2026-01-15'
     },
@@ -90,7 +90,7 @@ function ListaTickets({ onNuevoTicket, onVerTicket }) {
     return coincideBusqueda && coincideEstado && coincidePrioridad;
   });
 
-  // Función para obtener clase CSS según estado
+  // Función obtener clase CSS según estado
   const obtenerClaseEstado = (estado) => {
     const clases = {
       'Abierto': 'estado-abierto',

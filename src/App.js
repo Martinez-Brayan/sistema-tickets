@@ -16,25 +16,6 @@ import CheckInOutPage from './paginas/CheckInOutPage';
 import ReportesPage from './paginas/ReportesPage';
 import ConfiguracionPage from './paginas/ConfiguracionPage';
 
-// Componente temporal para páginas en construcción
-function PaginaEnConstruccion({ titulo }) {
-  return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column',
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      height: '60vh',
-      background: 'white',
-      borderRadius: '10px',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
-    }}>
-      <h1 style={{ color: '#1a1a2e', marginBottom: '10px' }}>{titulo}</h1>
-      <p style={{ color: '#666' }}></p>
-      <span style={{ fontSize: '60px', marginTop: '20px' }}>🚧</span>
-    </div>
-  );
-}
 
 // Dashboard  para Agente
 function DashboardAgente() {
@@ -232,7 +213,7 @@ function AppContenido() {
       case 'chat':
         return <ChatPage />;
       case 'historial':
-        return <PaginaEnConstruccion titulo="Historial de tickets" />;
+        return <aun no hecho="Historial de tickets" />;
       default:
         return <NuevaSolicitud />;
     }
@@ -275,4 +256,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
