@@ -1,6 +1,5 @@
-// LayoutAgente.js - Layout para Agente
 import React, { useState } from 'react';
-import { FaHome, FaTicketAlt, FaComments, FaCalendarAlt, FaSignOutAlt, FaBars, FaClock } from 'react-icons/fa';
+import { FaHome, FaTicketAlt, FaCalendarAlt, FaSignOutAlt, FaBars, FaClock } from 'react-icons/fa';
 import { useAutenticacion } from '../../contextos/ContextoAutenticacion';
 import './Layout.css';
 
@@ -22,8 +21,8 @@ function LayoutAgente({ children, onCambiarPagina, paginaActual }) {
         
         <nav className="menu-navegacion">
           <button 
-            onClick={() => onCambiarPagina('inicio')} 
-            className={`menu-enlace ${paginaActual === 'inicio' ? 'activo' : ''}`}
+            onClick={() => onCambiarPagina('dashboard')} 
+            className={`menu-enlace ${paginaActual === 'dashboard' ? 'activo' : ''}`}
           >
             <FaHome className="menu-icono" />
             {menuAbierto && <span>Mi Dashboard</span>}
@@ -36,7 +35,7 @@ function LayoutAgente({ children, onCambiarPagina, paginaActual }) {
             <FaTicketAlt className="menu-icono" />
             {menuAbierto && <span>Mis Tickets</span>}
           </button>
-          
+
           <button 
             onClick={() => onCambiarPagina('mi-calendario')} 
             className={`menu-enlace ${paginaActual === 'mi-calendario' ? 'activo' : ''}`}

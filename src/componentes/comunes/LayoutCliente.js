@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaPlus, FaTicketAlt, FaComments, FaSignOutAlt, FaBars } from 'react-icons/fa';
+import { FaPlus, FaTicketAlt, FaSignOutAlt, FaBars } from 'react-icons/fa';
 import { useAutenticacion } from '../../contextos/ContextoAutenticacion';
 import './Layout.css';
 
@@ -40,7 +40,7 @@ function LayoutCliente({ children, onCambiarPagina, paginaActual }) {
         <div className="menu-pie">
           <button onClick={cerrarSesion} className="menu-enlace boton-salir">
             <FaSignOutAlt className="menu-icono" />
-            {menuAbierto && <span>Cerrar Sesion</span>}
+            {menuAbierto && <span>Cerrar Sesión</span>}
           </button>
         </div>
       </aside>
