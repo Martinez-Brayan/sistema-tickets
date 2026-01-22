@@ -38,14 +38,6 @@ function LayoutAgente({ children, onCambiarPagina, paginaActual }) {
           </button>
           
           <button 
-            onClick={() => onCambiarPagina('chat')} 
-            className={`menu-enlace ${paginaActual === 'chat' ? 'activo' : ''}`}
-          >
-            <FaComments className="menu-icono" />
-            {menuAbierto && <span>Chat Clientes</span>}
-          </button>
-
-          <button 
             onClick={() => onCambiarPagina('mi-calendario')} 
             className={`menu-enlace ${paginaActual === 'mi-calendario' ? 'activo' : ''}`}
           >

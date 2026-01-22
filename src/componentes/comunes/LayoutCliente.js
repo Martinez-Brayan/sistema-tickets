@@ -35,14 +35,6 @@ function LayoutCliente({ children, onCambiarPagina, paginaActual }) {
             <FaTicketAlt className="menu-icono" />
             {menuAbierto && <span>Mis Tickets</span>}
           </button>
-          
-          <button 
-            onClick={() => onCambiarPagina('chat')} 
-            className={`menu-enlace ${paginaActual === 'chat' ? 'activo' : ''}`}
-          >
-            <FaComments className="menu-icono" />
-            {menuAbierto && <span>Chat con Soporte</span>}
-          </button>
         </nav>
 
         <div className="menu-pie">
