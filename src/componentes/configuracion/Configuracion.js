@@ -1,239 +1,299 @@
 import React, { useState } from 'react';
-import { FaFileAlt, FaDownload, FaCalendarAlt, FaPrint } from 'react-icons/fa';
+import { FaCog, FaBuilding, FaClock, FaEnvelope, FaShieldAlt, FaSave, FaEdit } from 'react-icons/fa';
 import './Configuracion.css';
 
-function Reportes() {
-  const [periodoSeleccionado, setPeriodoSeleccionado] = useState('mes');
-  const [tipoReporte, setTipoReporte] = useState('general');
+function Configuracion() {
+  const [seccionActiva, setSeccionActiva] = useState('general');
 
-  const fechaActual = new Date().toLocaleDateString('es-ES', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  // Estados para configuracion general
+  const [configGeneral, setConfigGeneral] = useState({
+    nombreEmpresa: 'Mi Empresa S.A.',
+    correoSoporte: 'soporte@miempresa.com',
+    telefonoSoporte: '+507 123-4567',
+    horarioAtencion: '8:00 AM - 5:00 PM',
+    diasLaborales: 'Lunes a Viernes',
+    zonaHoraria: 'America/Panama'
   });
 
-  // Datos del reporte
-  const datos = {
-    periodo: 'Enero 2026',
-    fechaGeneracion: fechaActual,
-    
-    resumenGeneral: {
-      ticketsCreados: 156,
-      ticketsResueltos: 128,
-      ticketsPendientes: 28,
-      tiempoPromedioRespuesta: '2 horas 30 minutos',
-      tiempoPromedioResolucion: '8 horas 15 minutos',
-      satisfaccionCliente: 94
-    },
+  // Estados para prioridades
+  const [prioridades] = useState([
+    { id: 1, nombre: 'Alta', tiempoRespuesta: '2 horas', tiempoResolucion: '8 horas', color: '#e74c3c' },
+    { id: 2, nombre: 'Media', tiempoRespuesta: '4 horas', tiempoResolucion: '24 horas', color: '#f39c12' },
+    { id: 3, nombre: 'Baja', tiempoRespuesta: '8 horas', tiempoResolucion: '48 horas', color: '#27ae60' }
+  ]);
 
-    ticketsPorEstado: [
-      { estado: 'Abierto', cantidad: 23 },
-      { estado: 'En Proceso', cantidad: 45 },
-      { estado: 'En Espera de Usuario', cantidad: 12 },
-      { estado: 'Resuelto', cantidad: 68 },
-      { estado: 'Cerrado', cantidad: 8 }
-    ],
+  // Estados para roles
+  const [roles] = useState([
+    { id: 1, nombre: 'Administrador', permisos: ['todo'], descripcion: 'Acceso completo al sistema' },
+    { id: 2, nombre: 'Agente', permisos: ['tickets', 'chat', 'calendario'], descripcion: 'Atencion de tickets y chat' },
+    { id: 3, nombre: 'Cliente', permisos: ['mis-tickets', 'chat'], descripcion: 'Crear y ver sus tickets' }
+  ]);
 
-    ticketsPorPrioridad: [
-      { prioridad: 'Alta', cantidad: 28 },
-      { prioridad: 'Media', cantidad: 67 },
-      { prioridad: 'Baja', cantidad: 61 }
-    ],
+  // Estados para notificaciones
+  const [configNotificaciones, setConfigNotificaciones] = useState({
+    emailNuevoTicket: true,
+    emailTicketAsignado: true,
+    emailTicketResuelto: true,
+    emailComentario: false,
+    recordatorioTicketPendiente: true,
+    diasRecordatorio: 3
+  });
 
-    ticketsPorCategoria: [
-      { categoria: 'Hardware', cantidad: 34 },
-      { categoria: 'Software', cantidad: 52 },
-      { categoria: 'Red', cantidad: 28 },
-      { categoria: 'Accesos', cantidad: 22 },
-      { categoria: 'Otros', cantidad: 20 }
-    ],
-
-    empresasConMasTickets: [
-      { empresa: '...', cantidad: 32 },
-      { empresa: 'Panama', cantidad: 28 },
-      { empresa: ' empresa..', cantidad: 18 },
-      { empresa: 'empresa \...', cantidad: 15 }
-    ]
+  // Guardar configuracion general
+  const guardarConfigGeneral = () => {
+    alert('Configuracion general guardada correctamente');
   };
 
-  const exportarReporte = (formato) => {
-    alert(`Exportando reporte en formato ${formato}...`);
-  };
-
-  const imprimirReporte = () => {
-    window.print();
+  // Guardar notificaciones
+  const guardarNotificaciones = () => {
+    alert('Configuracion de notificaciones guardada correctamente');
   };
 
   return (
-    <div className="reportes-contenedor">
-      {/* Controles */}
-      <div className="reportes-controles no-print">
-        <div className="filtros">
-          <div className="filtro-grupo">
-            <FaCalendarAlt />
-            <select value={periodoSeleccionado} onChange={(e) => setPeriodoSeleccionado(e.target.value)}>
-              <option value="semana">Esta semana</option>
-              <option value="mes">Este mes</option>
-              <option value="trimestre">Ultimo trimestre</option>
-              <option value="ano">Este ano</option>
-            </select>
-          </div>
-          <div className="filtro-grupo">
-            <FaFileAlt />
-            <select value={tipoReporte} onChange={(e) => setTipoReporte(e.target.value)}>
-              <option value="general">Reporte General</option>
-              <option value="agentes">Reporte de Agentes</option>
-              <option value="clientes">Reporte de Clientes</option>
-            </select>
-          </div>
-        </div>
-        <div className="acciones">
-          <button className="boton-accion" onClick={imprimirReporte}>
-            <FaPrint /> Imprimir
+    <div className="configuracion-contenedor">
+      {/* Menu lateral */}
+      <div className="config-menu">
+        <h2><FaCog /> Configuracion</h2>
+        <nav>
+          <button 
+            className={seccionActiva === 'general' ? 'activo' : ''} 
+            onClick={() => setSeccionActiva('general')}
+          >
+            <FaBuilding /> General
           </button>
-          <button className="boton-accion pdf" onClick={() => exportarReporte('PDF')}>
-            <FaDownload /> PDF
+          <button 
+            className={seccionActiva === 'prioridades' ? 'activo' : ''} 
+            onClick={() => setSeccionActiva('prioridades')}
+          >
+            <FaClock /> Prioridades y SLA
           </button>
-          <button className="boton-accion excel" onClick={() => exportarReporte('Excel')}>
-            <FaDownload /> Excel
+          <button 
+            className={seccionActiva === 'roles' ? 'activo' : ''} 
+            onClick={() => setSeccionActiva('roles')}
+          >
+            <FaShieldAlt /> Roles y Permisos
           </button>
-        </div>
+          <button 
+            className={seccionActiva === 'notificaciones' ? 'activo' : ''} 
+            onClick={() => setSeccionActiva('notificaciones')}
+          >
+            <FaEnvelope /> Notificaciones
+          </button>
+        </nav>
       </div>
 
-      {/* Documento del reporte */}
-      <div className="reporte-documento">
-        {/* Encabezado del documento */}
-        <div className="documento-encabezado">
-          <h1>REPORTE DE HELPDESK</h1>
-          <h2>Periodo: {datos.periodo}</h2>
-          <p className="fecha-generacion">Generado el: {datos.fechaGeneracion}</p>
-        </div>
-
-        {/* Seccion 1: Resumen Ejecutivo */}
-        <div className="documento-seccion">
-          <h3>1. RESUMEN EJECUTIVO</h3>
-          <div className="seccion-contenido">
-            <p>Durante el periodo de <strong>{datos.periodo}</strong>, el sistema de HelpDesk registro un total de <strong>{datos.resumenGeneral.ticketsCreados} tickets</strong>, de los cuales <strong>{datos.resumenGeneral.ticketsResueltos}</strong> fueron resueltos satisfactoriamente, representando una tasa de resolucion del <strong>{Math.round((datos.resumenGeneral.ticketsResueltos / datos.resumenGeneral.ticketsCreados) * 100)}%</strong>.</p>
+      {/* Contenido */}
+      <div className="config-contenido">
+        {/* Seccion General */}
+        {seccionActiva === 'general' && (
+          <div className="config-seccion">
+            <h3><FaBuilding /> Configuracion General</h3>
+            <p className="seccion-descripcion">Informacion basica de la empresa y el sistema de soporte.</p>
             
-            <p>El tiempo promedio de primera respuesta fue de <strong>{datos.resumenGeneral.tiempoPromedioRespuesta}</strong>, mientras que el tiempo promedio de resolucion completa fue de <strong>{datos.resumenGeneral.tiempoPromedioResolucion}</strong>.</p>
-            
-            <p>La satisfaccion general del cliente se mantuvo en un <strong>{datos.resumenGeneral.satisfaccionCliente}%</strong>, lo cual indica un nivel de servicio satisfactorio.</p>
-          </div>
-        </div>
+            <div className="formulario-config">
+              <div className="campo-config">
+                <label>Nombre de la Empresa</label>
+                <input 
+                  type="text" 
+                  value={configGeneral.nombreEmpresa}
+                  onChange={(e) => setConfigGeneral({...configGeneral, nombreEmpresa: e.target.value})}
+                />
+              </div>
 
-        {/* Seccion 2: Tickets por Estado */}
-        <div className="documento-seccion">
-          <h3>2. DISTRIBUCION DE TICKETS POR ESTADO</h3>
-          <div className="seccion-contenido">
-            <table className="tabla-reporte">
-              <thead>
-                <tr>
-                  <th>Estado</th>
-                  <th>Cantidad</th>
-                  <th>Porcentaje</th>
-                </tr>
-              </thead>
-              <tbody>
-                {datos.ticketsPorEstado.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.estado}</td>
-                    <td>{item.cantidad}</td>
-                    <td>{Math.round((item.cantidad / datos.resumenGeneral.ticketsCreados) * 100)}%</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td><strong>TOTAL</strong></td>
-                  <td><strong>{datos.resumenGeneral.ticketsCreados}</strong></td>
-                  <td><strong>100%</strong></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
+              <div className="campo-config">
+                <label>Correo de Soporte</label>
+                <input 
+                  type="email" 
+                  value={configGeneral.correoSoporte}
+                  onChange={(e) => setConfigGeneral({...configGeneral, correoSoporte: e.target.value})}
+                />
+              </div>
 
-        {/* Seccion 3: Tickets por Prioridad */}
-        <div className="documento-seccion">
-          <h3>3. DISTRIBUCION DE TICKETS POR PRIORIDAD</h3>
-          <div className="seccion-contenido">
-            <table className="tabla-reporte">
-              <thead>
-                <tr>
-                  <th>Prioridad</th>
-                  <th>Cantidad</th>
-                  <th>Porcentaje</th>
-                </tr>
-              </thead>
-              <tbody>
-                {datos.ticketsPorPrioridad.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.prioridad}</td>
-                    <td>{item.cantidad}</td>
-                    <td>{Math.round((item.cantidad / datos.resumenGeneral.ticketsCreados) * 100)}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+              <div className="campo-config">
+                <label>Telefono de Soporte</label>
+                <input 
+                  type="text" 
+                  value={configGeneral.telefonoSoporte}
+                  onChange={(e) => setConfigGeneral({...configGeneral, telefonoSoporte: e.target.value})}
+                />
+              </div>
 
-        {/* Seccion 4: Tickets por Categoria */}
-        <div className="documento-seccion">
-          <h3>4. DISTRIBUCION DE TICKETS POR CATEGORIA</h3>
-          <div className="seccion-contenido">
-            <table className="tabla-reporte">
-              <thead>
-                <tr>
-                  <th>Categoria</th>
-                  <th>Cantidad</th>
-                  <th>Porcentaje</th>
-                </tr>
-              </thead>
-              <tbody>
-                {datos.ticketsPorCategoria.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.categoria}</td>
-                    <td>{item.cantidad}</td>
-                    <td>{Math.round((item.cantidad / datos.resumenGeneral.ticketsCreados) * 100)}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+              <div className="campo-fila">
+                <div className="campo-config">
+                  <label>Horario de Atencion</label>
+                  <input 
+                    type="text" 
+                    value={configGeneral.horarioAtencion}
+                    onChange={(e) => setConfigGeneral({...configGeneral, horarioAtencion: e.target.value})}
+                  />
+                </div>
+
+                <div className="campo-config">
+                  <label>Dias Laborales</label>
+                  <input 
+                    type="text" 
+                    value={configGeneral.diasLaborales}
+                    onChange={(e) => setConfigGeneral({...configGeneral, diasLaborales: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="campo-config">
+                <label>Zona Horaria</label>
+                <select 
+                  value={configGeneral.zonaHoraria}
+                  onChange={(e) => setConfigGeneral({...configGeneral, zonaHoraria: e.target.value})}
+                >
+                  <option value="America/Panama">America/Panama (UTC-5)</option>
+                  <option value="America/Bogota">America/Bogota (UTC-5)</option>
+                  <option value="America/Mexico_City">America/Mexico City (UTC-6)</option>
+                  <option value="America/New_York">America/New York (UTC-5)</option>
+                </select>
+              </div>
+
+              <button className="boton-guardar" onClick={guardarConfigGeneral}>
+                <FaSave /> Guardar Cambios
+              </button>
+            </div>
           </div>
-        </div>
-        {/* Seccion 6: Empresas con mas Tickets */}
-        <div className="documento-seccion">
-          <h3>6. EMPRESAS CON MAYOR CANTIDAD DE TICKETS</h3>
-          <div className="seccion-contenido">
-            <table className="tabla-reporte">
-              <thead>
-                <tr>
-                  <th>Posicion</th>
-                  <th>Empresa</th>
-                  <th>Cantidad de Tickets</th>
-                </tr>
-              </thead>
-              <tbody>
-                {datos.empresasConMasTickets.map((empresa, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{empresa.empresa}</td>
-                    <td>{empresa.cantidad}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        )}
+
+        {/* Seccion Prioridades */}
+        {seccionActiva === 'prioridades' && (
+          <div className="config-seccion">
+            <h3><FaClock /> Prioridades y SLA</h3>
+            <p className="seccion-descripcion">Define los tiempos de respuesta y resolucion segun la prioridad.</p>
+
+            <div className="lista-items">
+              {prioridades.map(prioridad => (
+                <div key={prioridad.id} className="item-config prioridad-item">
+                  <div className="prioridad-color" style={{ background: prioridad.color }}></div>
+                  <div className="item-info">
+                    <h4>{prioridad.nombre}</h4>
+                    <div className="prioridad-tiempos">
+                      <span>Respuesta: <strong>{prioridad.tiempoRespuesta}</strong></span>
+                      <span>Resolucion: <strong>{prioridad.tiempoResolucion}</strong></span>
+                    </div>
+                  </div>
+                  <button className="boton-editar">
+                    <FaEdit />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-        {/* Pie del documento */}
-        <div className="documento-pie">
-          <p>--- Fin del Reporte ---</p>
-        </div>
+        )}
+
+        {/* Seccion Roles */}
+        {seccionActiva === 'roles' && (
+          <div className="config-seccion">
+            <h3><FaShieldAlt /> Roles y Permisos</h3>
+            <p className="seccion-descripcion">Configura los roles del sistema y sus permisos.</p>
+
+            <div className="lista-items">
+              {roles.map(rol => (
+                <div key={rol.id} className="item-config rol-item">
+                  <div className="item-info">
+                    <h4>{rol.nombre}</h4>
+                    <p>{rol.descripcion}</p>
+                    <div className="permisos-lista">
+                      {rol.permisos.map((permiso, index) => (
+                        <span key={index} className="permiso-badge">{permiso}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <button className="boton-editar">
+                    <FaEdit />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Seccion Notificaciones */}
+        {seccionActiva === 'notificaciones' && (
+          <div className="config-seccion">
+            <h3><FaEnvelope /> Configuracion de Notificaciones</h3>
+            <p className="seccion-descripcion">Define cuando se envian notificaciones por correo.</p>
+
+            <div className="formulario-config">
+              <div className="grupo-opciones">
+                <h4>Notificaciones por Correo</h4>
+                
+                <label className="opcion-check">
+                  <input 
+                    type="checkbox" 
+                    checked={configNotificaciones.emailNuevoTicket}
+                    onChange={(e) => setConfigNotificaciones({...configNotificaciones, emailNuevoTicket: e.target.checked})}
+                  />
+                  <span>Enviar correo cuando se crea un nuevo ticket</span>
+                </label>
+
+                <label className="opcion-check">
+                  <input 
+                    type="checkbox" 
+                    checked={configNotificaciones.emailTicketAsignado}
+                    onChange={(e) => setConfigNotificaciones({...configNotificaciones, emailTicketAsignado: e.target.checked})}
+                  />
+                  <span>Enviar correo al agente cuando se le asigna un ticket</span>
+                </label>
+
+                <label className="opcion-check">
+                  <input 
+                    type="checkbox" 
+                    checked={configNotificaciones.emailTicketResuelto}
+                    onChange={(e) => setConfigNotificaciones({...configNotificaciones, emailTicketResuelto: e.target.checked})}
+                  />
+                  <span>Enviar correo al cliente cuando su ticket es resuelto</span>
+                </label>
+
+                <label className="opcion-check">
+                  <input 
+                    type="checkbox" 
+                    checked={configNotificaciones.emailComentario}
+                    onChange={(e) => setConfigNotificaciones({...configNotificaciones, emailComentario: e.target.checked})}
+                  />
+                  <span>Enviar correo cuando hay un nuevo comentario</span>
+                </label>
+              </div>
+
+              <div className="grupo-opciones">
+                <h4>Recordatorios</h4>
+                
+                <label className="opcion-check">
+                  <input 
+                    type="checkbox" 
+                    checked={configNotificaciones.recordatorioTicketPendiente}
+                    onChange={(e) => setConfigNotificaciones({...configNotificaciones, recordatorioTicketPendiente: e.target.checked})}
+                  />
+                  <span>Enviar recordatorio de tickets pendientes</span>
+                </label>
+
+                {configNotificaciones.recordatorioTicketPendiente && (
+                  <div className="campo-config inline">
+                    <label>Enviar recordatorio despues de</label>
+                    <input 
+                      type="number" 
+                      value={configNotificaciones.diasRecordatorio}
+                      onChange={(e) => setConfigNotificaciones({...configNotificaciones, diasRecordatorio: parseInt(e.target.value)})}
+                      min="1"
+                      max="30"
+                    />
+                    <span>dias sin actividad</span>
+                  </div>
+                )}
+              </div>
+
+              <button className="boton-guardar" onClick={guardarNotificaciones}>
+                <FaSave /> Guardar Cambios
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-export default Reportes;
+export default Configuracion;
