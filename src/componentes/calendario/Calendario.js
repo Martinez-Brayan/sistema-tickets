@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaChevronLeft, FaChevronRight, FaPlus, FaTimes, FaCalendarAlt } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaVideo, FaUser, FaClock } from 'react-icons/fa';
 import './Calendario.css';
 
 function Calendario() {

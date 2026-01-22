@@ -1,6 +1,6 @@
 //página principal estilo Service Desk
 import React, { useState } from 'react';
-import { FaTicketAlt, FaClock, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { FaTicketAlt, FaClock, FaCheckCircle, FaCog, FaExclamationTriangle } from 'react-icons/fa';
 import './Dashboard.css';
 
 function Dashboard() {
