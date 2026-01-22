@@ -8,7 +8,6 @@ import LayoutCliente from './componentes/comunes/LayoutCliente';
 import MiCalendario from './componentes/calendario/MiCalendario';
 import Dashboard from './paginas/Dashboard';
 import Tickets from './paginas/Tickets';
-import ChatPage from './paginas/ChatPage';
 import Usuarios from './paginas/Usuarios';
 import CalendarioPage from './paginas/CalendarioPage';
 import MiCalendarioPage from './paginas/MiCalendarioPage';
@@ -296,8 +295,6 @@ function AppContenido() {
         return <DashboardAgente />;
       case 'mis-tickets':
         return <ListaTickets soloLectura={true} titulo="Mis tickets Asignados" />;
-      case 'chat':
-        return <ChatPage />;
       case 'mi-calendario':
         return <MiCalendarioPage />;
       case 'registro-tiempo':
@@ -314,8 +311,6 @@ function AppContenido() {
         return <NuevaSolicitud />;
       case 'mis-tickets':
         return <MisTicketsCliente />;
-      case 'chat':
-        return <ChatPage />;
       default:
         return <NuevaSolicitud />;
     }

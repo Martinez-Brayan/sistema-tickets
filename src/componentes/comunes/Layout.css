@@ -1,13 +1,50 @@
-/* Indicador de rol en el menú */
+/* ===== LAYOUT PRINCIPAL ===== */
+.layout-contenedor {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+/* ===== MENU LATERAL ===== */
+.layout-menu {
+  background: #1a1a2e;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  flex-shrink: 0;
+}
+
+.layout-menu.abierto {
+  width: 250px;
+}
+
+.layout-menu.cerrado {
+  width: 70px;
+}
+
+/* Encabezado del menú */
+.menu-encabezado {
+  padding: 20px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.menu-encabezado h2 {
+  margin: 0;
+  font-size: 20px;
+  white-space: nowrap;
+}
+
+/* Indicador de rol */
 .rol-indicador {
-  display: block;
+  display: inline-block;
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 11px;
   font-weight: bold;
   text-transform: uppercase;
-  margin-top: 8px;
-  text-align: center;
+  margin-top: 10px;
 }
 
 .rol-indicador.admin {
@@ -23,4 +60,165 @@
 .rol-indicador.cliente {
   background: #27ae60;
   color: white;
+}
+
+/* Navegación */
+.menu-navegacion {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 20px 10px;
+  flex: 1;
+}
+
+.menu-enlace {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #a0a0a0;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.menu-enlace:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.menu-enlace.activo {
+  background: #27ae60;
+  color: white;
+  font-weight: 500;
+}
+
+.menu-icono {
+  font-size: 18px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Menú cerrado */
+.layout-menu.cerrado .menu-enlace {
+  justify-content: center;
+  padding: 12px;
+}
+
+.layout-menu.cerrado .menu-enlace span {
+  display: none;
+}
+
+.layout-menu.cerrado .rol-indicador {
+  display: none;
+}
+
+/* Pie del menú */
+.menu-pie {
+  padding: 15px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.boton-salir {
+  color: #e74c3c !important;
+}
+
+.boton-salir:hover {
+  background: rgba(231, 76, 60, 0.2) !important;
+}
+
+/* ===== AREA PRINCIPAL ===== */
+.layout-principal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Encabezado superior */
+.layout-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+.boton-menu {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #333;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 5px;
+  transition: background 0.2s;
+}
+
+.boton-menu:hover {
+  background: #f0f0f0;
+}
+
+.encabezado-usuario {
+  font-size: 14px;
+  color: #666;
+}
+
+.encabezado-usuario strong {
+  color: #333;
+}
+
+/* Contenido principal */
+.layout-contenido {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #f5f5f5;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .layout-menu.abierto {
+    width: 200px;
+  }
+  
+  .layout-menu.cerrado {
+    width: 60px;
+  }
+  
+  .menu-encabezado h2 {
+    font-size: 16px;
+  }
+  
+  .menu-enlace {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .layout-contenido {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .layout-menu.cerrado {
+    width: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  
+  .layout-menu.abierto {
+    position: fixed;
+    z-index: 1000;
+    height: 100vh;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
 }
