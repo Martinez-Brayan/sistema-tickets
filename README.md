@@ -84,14 +84,38 @@ npm start
 
 ---
 
-## 🚀 Producción
-```bash
-# Crear build
-npm run build
+## 🚀 Deploy en Vercel
 
-# Desplegar en Vercel
+### Opción 1: Deploy desde CLI
+```bash
+# Instalar Vercel CLI
+npm install -g vercel
+
+# Iniciar sesión
+vercel login
+
+# Deploy (desde la carpeta del proyecto)
 vercel
+
+# Deploy a producción
+vercel --prod
 ```
+
+### Opción 2: Deploy desde GitHub
+1. Sube el proyecto a un repositorio de GitHub
+2. Ve a [vercel.com](https://vercel.com) e inicia sesión
+3. Click en "Add New" → "Project"
+4. Importa tu repositorio de GitHub
+5. Vercel detectará automáticamente que es un proyecto React (Create React App)
+6. Click en "Deploy"
+
+### Variables de Entorno en Vercel
+Si tu proyecto usa variables de entorno, configúralas en:
+- Vercel Dashboard → Tu Proyecto → Settings → Environment Variables
+
+Ejemplo de variables:
+- `REACT_APP_API_URL` - URL de tu API backend
+- `REACT_APP_SOCKET_URL` - URL del servidor de WebSockets
 
 ---
 
