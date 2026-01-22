@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaChevronLeft, FaChevronRight, FaPlus, FaTimes, FaCalendarAlt, FaMapMarkerAlt,FaVideo,FaUser,FaClock } from 'react-icons/fa';
-import './Calendario.css';
+import './Calendario.css;
 
 function Calendario() {
   const [fechaActual, setFechaActual] = useState(new Date());
