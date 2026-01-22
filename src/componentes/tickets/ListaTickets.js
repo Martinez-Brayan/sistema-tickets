@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaSearch, FaEye, FaEdit, FaTrash, FaTicketAlt } from 'react-icons/fa';
+import { FaSearch, FaEye, FaTrash, FaTicketAlt } from 'react-icons/fa';
 import DetalleTicket from './DetalleTicket';
 import './ListaTickets.css';
 

@@ -1,13 +1,10 @@
-//Componente Principal con sistema de roles
 import React, { useState } from 'react';
 import { ProveedorAutenticacion, useAutenticacion } from './contextos/ContextoAutenticacion';
 import Login from './componentes/autenticacion/Login';
 import LayoutAdmin from './componentes/comunes/LayoutAdmin';
 import LayoutAgente from './componentes/comunes/LayoutAgente';
 import LayoutCliente from './componentes/comunes/LayoutCliente';
-import MiCalendario from './componentes/calendario/MiCalendario';
 import Dashboard from './paginas/Dashboard';
-import Tickets from './paginas/Tickets';
 import Usuarios from './paginas/Usuarios';
 import CalendarioPage from './paginas/CalendarioPage';
 import MiCalendarioPage from './paginas/MiCalendarioPage';
@@ -16,8 +13,7 @@ import ReportesPage from './paginas/ReportesPage';
 import ConfiguracionPage from './paginas/ConfiguracionPage';
 import ListaTickets from './componentes/tickets/ListaTickets';
 
-
-// Dashboard  para Agente
+// Dashboard para Agente
 function DashboardAgente() {
   return (
     <div style={{ padding: '20px' }}>
@@ -44,7 +40,7 @@ function DashboardAgente() {
   );
 }
 
-//nueva solicitud para Cliente
+// Nueva solicitud para Cliente
 function NuevaSolicitud() {
   const [titulo, setTitulo] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -106,9 +102,7 @@ function NuevaSolicitud() {
 // Lista de tickets del cliente
 function MisTicketsCliente() {
   const [filtroEstado, setFiltroEstado] = useState('todos');
-  
-  // Datos vacios - vendran de Supabase
-  const [tickets, setTickets] = useState([]);
+  const [tickets] = useState([]);
 
   const ticketsFiltrados = tickets.filter(ticket => {
     if (filtroEstado === 'todos') return true;
@@ -166,95 +160,28 @@ function MisTicketsCliente() {
       )}
 
       <style>{`
-        .mis-tickets-cliente {
-          padding: 10px;
-        }
-        .mis-tickets-encabezado {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 20px;
-        }
-        .mis-tickets-encabezado h1 {
-          margin: 0;
-          color: #1a1a2e;
-        }
-        .filtro-select {
-          padding: 10px 15px;
-          border: 2px solid #e0e0e0;
-          border-radius: 6px;
-          font-size: 14px;
-          cursor: pointer;
-        }
-        .sin-tickets {
-          text-align: center;
-          padding: 60px 20px;
-          background: white;
-          border-radius: 10px;
-          color: #999;
-        }
-        .tickets-lista {
-          display: flex;
-          flex-direction: column;
-          gap: 15px;
-        }
-        .ticket-card {
-          background: white;
-          border-radius: 10px;
-          padding: 20px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .ticket-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 10px;
-        }
-        .ticket-id {
-          font-weight: bold;
-          color: #3498db;
-        }
-        .ticket-estado {
-          padding: 5px 12px;
-          border-radius: 20px;
-          font-size: 12px;
-          font-weight: 500;
-        }
-        .ticket-estado.abierto {
-          background: #e3f2fd;
-          color: #1976d2;
-        }
-        .ticket-estado.en-proceso {
-          background: #fff3e0;
-          color: #f57c00;
-        }
-        .ticket-estado.en-espera-de-usuario {
-          background: #f3e5f5;
-          color: #7b1fa2;
-        }
-        .ticket-estado.resuelto {
-          background: #e8f5e9;
-          color: #388e3c;
-        }
-        .ticket-estado.cerrado {
-          background: #eceff1;
-          color: #607d8b;
-        }
-        .ticket-titulo {
-          margin: 0 0 10px;
-          font-size: 16px;
-          color: #333;
-        }
-        .ticket-detalles {
-          display: flex;
-          gap: 20px;
-          font-size: 13px;
-          color: #666;
-        }
+        .mis-tickets-cliente { padding: 10px; }
+        .mis-tickets-encabezado { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .mis-tickets-encabezado h1 { margin: 0; color: #1a1a2e; }
+        .filtro-select { padding: 10px 15px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 14px; cursor: pointer; }
+        .sin-tickets { text-align: center; padding: 60px 20px; background: white; border-radius: 10px; color: #999; }
+        .tickets-lista { display: flex; flex-direction: column; gap: 15px; }
+        .ticket-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .ticket-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .ticket-id { font-weight: bold; color: #3498db; }
+        .ticket-estado { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .ticket-estado.abierto { background: #e3f2fd; color: #1976d2; }
+        .ticket-estado.en-proceso { background: #fff3e0; color: #f57c00; }
+        .ticket-estado.en-espera-de-usuario { background: #f3e5f5; color: #7b1fa2; }
+        .ticket-estado.resuelto { background: #e8f5e9; color: #388e3c; }
+        .ticket-estado.cerrado { background: #eceff1; color: #607d8b; }
+        .ticket-titulo { margin: 0 0 10px; font-size: 16px; color: #333; }
+        .ticket-detalles { display: flex; gap: 20px; font-size: 13px; color: #666; }
       `}</style>
     </div>
   );
 }
+
 // Componente interno que usa el contexto
 function AppContenido() {
   const { autenticado, usuario } = useAutenticacion();
@@ -268,7 +195,6 @@ function AppContenido() {
     return <Login />;
   }
 
-  // Páginas para Administrador
   const renderizarPaginaAdmin = () => {
     switch (paginaActual) {
       case 'inicio':
@@ -288,13 +214,12 @@ function AppContenido() {
     }
   };
 
-  // Páginas para Agente
   const renderizarPaginaAgente = () => {
     switch (paginaActual) {
-      case 'inicio':
+      case 'dashboard':
         return <DashboardAgente />;
       case 'mis-tickets':
-        return <ListaTickets soloLectura={true} titulo="Mis tickets Asignados" />;
+        return <ListaTickets esAgente={true} titulo="Mis Tickets Asignados" />;
       case 'mi-calendario':
         return <MiCalendarioPage />;
       case 'registro-tiempo':
@@ -304,7 +229,6 @@ function AppContenido() {
     }
   };
 
-  // Páginas para Cliente
   const renderizarPaginaCliente = () => {
     switch (paginaActual) {
       case 'nueva-solicitud':
@@ -316,7 +240,6 @@ function AppContenido() {
     }
   };
 
-  // segun según rol
   if (usuario.rol === 'administrador') {
     return (
       <LayoutAdmin onCambiarPagina={cambiarPagina} paginaActual={paginaActual}>
@@ -344,7 +267,6 @@ function AppContenido() {
   return <Login />;
 }
 
-// Componente principal con el proveedor
 function App() {
   return (
     <ProveedorAutenticacion>
