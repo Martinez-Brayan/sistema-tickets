@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaFileAlt, FaDownload, FaCalendarAlt, FaPrint } from 'react-icons/fa';
-import './Reportes.css';
+import './Configuracion.css';
 
 function Reportes() {
   const [periodoSeleccionado, setPeriodoSeleccionado] = useState('mes');
