@@ -12,6 +12,7 @@ import CheckInOutPage from './paginas/CheckInOutPage';
 import ReportesPage from './paginas/ReportesPage';
 import ConfiguracionPage from './paginas/ConfiguracionPage';
 import ListaTickets from './componentes/tickets/ListaTickets';
+import NuevaSolicitud from './componentes/solicitud/NuevaSolicitud';
 
 // Dashboard para Agente
 function DashboardAgente() {
@@ -36,64 +37,6 @@ function DashboardAgente() {
           <p style={{ margin: '5px 0 0' }}>Urgentes</p>
         </div>
       </div>
-    </div>
-  );
-}
-// Nueva solicitud para Cliente
-function NuevaSolicitud() {
-  const [titulo, setTitulo] = useState('');
-  const [descripcion, setDescripcion] = useState('');
-  const [enviado, setEnviado] = useState(false);
-
-  const enviarSolicitud = (e) => {
-    e.preventDefault();
-    if (titulo && descripcion) {
-      setEnviado(true);
-      setTitulo('');
-      setDescripcion('');
-      setTimeout(() => setEnviado(false), 3000);
-    }
-  };
-
-  return (
-    <div style={{ maxWidth: '600px' }}>
-      <h1 style={{ color: '#1a1a2e', marginBottom: '20px' }}>Nueva Solicitud</h1>
-      
-      {enviado && (
-        <div style={{ background: '#d4edda', color: '#155724', padding: '15px', borderRadius: '5px', marginBottom: '20px' }}>
-          ¡Solicitud enviada correctamente! Un agente se comunicará pronto.
-        </div>
-      )}
-      
-      <form onSubmit={enviarSolicitud} style={{ background: 'white', padding: '25px', borderRadius: '10px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Título del problema *</label>
-          <input
-            type="text"
-            value={titulo}
-            onChange={(e) => setTitulo(e.target.value)}
-            placeholder="Describa brevemente su problema"
-            style={{ width: '100%', padding: '12px', border: '2px solid #e0e0e0', borderRadius: '5px', fontSize: '14px', boxSizing: 'border-box' }}
-            required
-          />
-        </div>
-        
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Descripción detallada *</label>
-          <textarea
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-            placeholder="Proporcione todos los detalles posibles..."
-            rows="5"
-            style={{ width: '100%', padding: '12px', border: '2px solid #e0e0e0', borderRadius: '5px', fontSize: '14px', resize: 'vertical', boxSizing: 'border-box' }}
-            required
-          />
-        </div>
-        
-        <button type="submit" style={{ width: '100%', padding: '14px', background: '#28a745', color: 'white', border: 'none', borderRadius: '5px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>
-          Enviar Solicitud
-        </button>
-      </form>
     </div>
   );
 }
@@ -273,5 +216,4 @@ function App() {
     </ProveedorAutenticacion>
   );
 }
-
 export default App;

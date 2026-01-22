@@ -1,0 +1,369 @@
+.nueva-solicitud {
+  padding: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.solicitud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 5px;
+}
+
+.solicitud-header h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #1a1a2e;
+}
+
+.btn-enviar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-enviar:hover {
+  background: #2980b9;
+}
+
+/* Formulario */
+.solicitud-formulario {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.formulario-seccion {
+  padding: 25px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.formulario-seccion:last-child {
+  border-bottom: none;
+}
+
+.formulario-seccion h3 {
+  margin: 0 0 20px;
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Campos */
+.campos-fila {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.campos-fila:last-child {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 50%;
+}
+
+.campo-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campo-grupo.campo-titulo {
+  grid-column: span 1;
+}
+
+.campo-grupo label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.campo-grupo input,
+.campo-grupo select {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.campo-grupo input:focus,
+.campo-grupo select:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.campo-grupo select:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* Editor */
+.campo-descripcion {
+  margin-top: 10px;
+}
+
+.editor-toolbar {
+  display: flex;
+  gap: 3px;
+  padding: 10px;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+  flex-wrap: wrap;
+}
+
+.editor-toolbar button {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.editor-toolbar button:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.editor-toolbar .separador {
+  width: 1px;
+  background: #ddd;
+  margin: 0 5px;
+}
+
+.editor-toolbar .select-tamaño {
+  padding: 5px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.editor-texto {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 0 0 5px 5px;
+  font-size: 14px;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+  min-height: 200px;
+  line-height: 1.6;
+}
+
+.editor-texto:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+/* Anexos */
+.seccion-anexos {
+  background: #fafafa;
+}
+
+.anexos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.anexos-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+  background: white;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.anexos-tabla th,
+.anexos-tabla td {
+  padding: 12px 15px;
+  text-align: left;
+  border: 1px solid #e0e0e0;
+}
+
+.anexos-tabla th {
+  background: #f5f5f5;
+  font-weight: 500;
+  font-size: 13px;
+  color: #555;
+}
+
+.anexos-tabla td {
+  font-size: 13px;
+}
+
+.sin-anexos {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+}
+
+.anexo-tamaño {
+  color: #888;
+  margin-left: 8px;
+  font-size: 12px;
+}
+
+.btn-eliminar {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.btn-eliminar:hover {
+  color: #c0392b;
+}
+
+.btn-añadir-anexo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #e74c3c;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-añadir-anexo:hover {
+  background: #c0392b;
+}
+
+/* Confirmación de envío */
+.solicitud-enviada {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 20px;
+}
+
+.confirmacion-card {
+  background: white;
+  border-radius: 15px;
+  padding: 50px;
+  text-align: center;
+  box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+  max-width: 500px;
+}
+
+.icono-exito {
+  font-size: 80px;
+  color: #27ae60;
+  margin-bottom: 20px;
+}
+
+.confirmacion-card h2 {
+  margin: 0 0 15px;
+  color: #333;
+  font-size: 24px;
+}
+
+.confirmacion-card p {
+  color: #666;
+  margin: 10px 0;
+  font-size: 15px;
+}
+
+.numero-ticket {
+  display: inline-block;
+  font-size: 32px;
+  font-weight: bold;
+  color: #3498db;
+  margin: 15px 0;
+}
+
+.mensaje-seguimiento {
+  background: #f0f7ff;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  font-size: 14px;
+}
+
+.confirmacion-acciones {
+  margin-top: 25px;
+}
+
+.btn-nuevo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-nuevo:hover {
+  background: #219a52;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .campos-fila {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .campos-fila:last-child {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .campos-fila {
+    grid-template-columns: 1fr;
+  }
+  
+  .solicitud-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+  
+  .btn-enviar {
+    justify-content: center;
+  }
+  
+  .confirmacion-card {
+    padding: 30px 20px;
+  }
+  
+  .icono-exito {
+    font-size: 60px;
+  }
+  
+  .numero-ticket {
+    font-size: 24px;
+  }
+}
