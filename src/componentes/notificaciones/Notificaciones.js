@@ -1,98 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaBell, FaTimes, FaTicketAlt, FaComment, FaCheck, FaTrash } from 'react-icons/fa';
-import { notificacionService } from '../../servicios/supabase';
 import './Notificaciones.css';
 
 function Notificaciones({ onVerTicket }) {
   const [mostrarPanel, setMostrarPanel] = useState(false);
+  
+  // Notificaciones - vendrán de Supabase
   const [notificaciones, setNotificaciones] = useState([]);
-  const [cargando, setCargando] = useState(true);
-
-  const usuarioId = localStorage.getItem('usuarioId');
-
-  // Cargar notificaciones
-  useEffect(() => {
-    if (usuarioId) {
-      cargarNotificaciones();
-      
-      // Suscribirse a nuevas notificaciones en tiempo real
-      const subscription = notificacionService.suscribirCambios(usuarioId, (payload) => {
-        if (payload.new) {
-          setNotificaciones(prev => [payload.new, ...prev]);
-        }
-      });
-
-      return () => {
-        subscription.unsubscribe();
-      };
-    }
-  }, [usuarioId]);
-
-  const cargarNotificaciones = async () => {
-    try {
-      setCargando(true);
-      const data = await notificacionService.obtener(usuarioId);
-      setNotificaciones(data || []);
-    } catch (error) {
-      console.error('Error al cargar notificaciones:', error);
-    } finally {
-      setCargando(false);
-    }
-  };
 
   // Contar no leídas
   const noLeidas = notificaciones.filter(n => !n.leida).length;
 
   // Marcar como leída
-  const marcarLeida = async (id) => {
-    try {
-      await notificacionService.marcarLeida(id);
-      setNotificaciones(notificaciones.map(n => 
-        n.id === id ? { ...n, leida: true } : n
-      ));
-    } catch (error) {
-      console.error('Error:', error);
-    }
+  const marcarLeida = (id) => {
+    setNotificaciones(notificaciones.map(n => 
+      n.id === id ? { ...n, leida: true } : n
+    ));
   };
 
   // Marcar todas como leídas
-  const marcarTodasLeidas = async () => {
-    try {
-      await notificacionService.marcarTodasLeidas(usuarioId);
-      setNotificaciones(notificaciones.map(n => ({ ...n, leida: true })));
-    } catch (error) {
-      console.error('Error:', error);
-    }
+  const marcarTodasLeidas = () => {
+    setNotificaciones(notificaciones.map(n => ({ ...n, leida: true })));
   };
 
   // Eliminar notificación
-  const eliminarNotificacion = async (id) => {
-    try {
-      await notificacionService.eliminar(id);
-      setNotificaciones(notificaciones.filter(n => n.id !== id));
-    } catch (error) {
-      console.error('Error:', error);
-    }
+  const eliminarNotificacion = (id) => {
+    setNotificaciones(notificaciones.filter(n => n.id !== id));
   };
 
   // Limpiar todas
-  const limpiarTodas = async () => {
-    try {
-      await notificacionService.eliminarTodas(usuarioId);
-      setNotificaciones([]);
-    } catch (error) {
-      console.error('Error:', error);
-    }
+  const limpiarTodas = () => {
+    setNotificaciones([]);
   };
 
   // Ver ticket desde notificación
-  const handleVerTicket = async (notif) => {
-    await marcarLeida(notif.id);
+  const handleVerTicket = (notif) => {
+    marcarLeida(notif.id);
     setMostrarPanel(false);
-    if (onVerTicket && notif.enlace) {
-      // Extraer ticketId del enlace
-      const ticketId = notif.enlace.split('/').pop();
-      onVerTicket(ticketId);
+    if (onVerTicket) {
+      onVerTicket(notif.ticketId);
     }
   };
 
@@ -115,10 +61,9 @@ function Notificaciones({ onVerTicket }) {
   // Obtener icono según tipo
   const getIcono = (tipo) => {
     switch (tipo) {
-      case 'TICKET_NUEVO':
-      case 'TICKET_ASIGNADO':
+      case 'nuevo-ticket':
         return <FaTicketAlt className="notif-icono nuevo" />;
-      case 'COMENTARIO_NUEVO':
+      case 'respuesta':
         return <FaComment className="notif-icono respuesta" />;
       default:
         return <FaBell className="notif-icono" />;
@@ -161,9 +106,7 @@ function Notificaciones({ onVerTicket }) {
             </div>
 
             <div className="panel-lista">
-              {cargando ? (
-                <div className="cargando-notif">Cargando...</div>
-              ) : notificaciones.length === 0 ? (
+              {notificaciones.length === 0 ? (
                 <div className="sin-notificaciones">
                   <FaBell className="icono-vacio" />
                   <p>No hay notificaciones</p>
@@ -179,7 +122,7 @@ function Notificaciones({ onVerTicket }) {
                     <div className="notif-contenido">
                       <p className="notif-titulo">{notif.titulo}</p>
                       <p className="notif-mensaje">{notif.mensaje}</p>
-                      <span className="notif-fecha">{formatearFecha(notif.fechaCreacion)}</span>
+                      <span className="notif-fecha">{formatearFecha(notif.fecha)}</span>
                     </div>
                     <button 
                       className="btn-eliminar-notif"

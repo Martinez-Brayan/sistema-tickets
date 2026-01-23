@@ -21,7 +21,7 @@ function Calendario() {
 
   const agentes = [
     { id: 2, nombre: ' ' },
-    { id: 3, nombre: '' }
+    { id: 3, nombre: 'M' }
   ];
 
   const mesAnterior = () => {
