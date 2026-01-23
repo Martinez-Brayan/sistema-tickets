@@ -1,7 +1,7 @@
-// LayoutAdmin.js - Layout para Administrador
 import React, { useState } from 'react';
 import { FaHome, FaTicketAlt, FaUsers, FaCalendarAlt, FaChartBar, FaCog, FaSignOutAlt, FaBars } from 'react-icons/fa';
 import { useAutenticacion } from '../../contextos/ContextoAutenticacion';
+import Notificaciones from '../notificaciones/Notificaciones';
 import './Layout.css';
 
 function LayoutAdmin({ children, onCambiarPagina, paginaActual }) {
@@ -12,12 +12,17 @@ function LayoutAdmin({ children, onCambiarPagina, paginaActual }) {
     setMenuAbierto(!menuAbierto);
   };
 
+  const handleVerTicket = (ticketId) => {
+    console.log('Ver ticket:', ticketId);
+    onCambiarPagina('tickets');
+  };
+
   return (
     <div className="layout-contenedor">
       <aside className={`layout-menu ${menuAbierto ? 'abierto' : 'cerrado'}`}>
         <div className="menu-encabezado">
           <h2>{menuAbierto ? '🎫 HelpDesk' : '🎫'}</h2>
-          {menuAbierto && <span className="rol-indicador admin">Administrador</span>}
+          {menuAbierto && <span className="rol-indicador admin">Admin</span>}
         </div>
         
         <nav className="menu-navegacion">
@@ -52,7 +57,7 @@ function LayoutAdmin({ children, onCambiarPagina, paginaActual }) {
             <FaCalendarAlt className="menu-icono" />
             {menuAbierto && <span>Calendario</span>}
           </button>
-          
+
           <button 
             onClick={() => onCambiarPagina('reportes')} 
             className={`menu-enlace ${paginaActual === 'reportes' ? 'activo' : ''}`}
@@ -60,7 +65,7 @@ function LayoutAdmin({ children, onCambiarPagina, paginaActual }) {
             <FaChartBar className="menu-icono" />
             {menuAbierto && <span>Reportes</span>}
           </button>
-          
+
           <button 
             onClick={() => onCambiarPagina('configuracion')} 
             className={`menu-enlace ${paginaActual === 'configuracion' ? 'activo' : ''}`}
@@ -83,8 +88,11 @@ function LayoutAdmin({ children, onCambiarPagina, paginaActual }) {
           <button className="boton-menu" onClick={alternarMenu}>
             <FaBars />
           </button>
-          <div className="encabezado-usuario">
-            <span>Bienvenido, <strong>{usuario?.nombre}</strong></span>
+          <div className="encabezado-derecha">
+            <Notificaciones onVerTicket={handleVerTicket} />
+            <div className="encabezado-usuario">
+              <span>Bienvenido, <strong>{usuario?.nombre}</strong></span>
+            </div>
           </div>
         </header>
 

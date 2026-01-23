@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  FaPaperPlane, FaPaperclip, FaBold, FaItalic, FaUnderline, FaStrikethrough,
+import { FaPaperPlane, FaPaperclip, FaBold, FaItalic, FaUnderline, FaStrikethrough,
   FaListUl, FaListOl, FaAlignLeft, FaAlignCenter, FaAlignRight, FaLink, 
   FaImage, FaTable, FaCode, FaExpand, FaSmile, FaPlus, FaTrash, FaTimes,
   FaCheckCircle } from 'react-icons/fa';
@@ -473,5 +472,4 @@ function NuevaSolicitud() {
     </div>
   );
 }
-
 export default NuevaSolicitud;

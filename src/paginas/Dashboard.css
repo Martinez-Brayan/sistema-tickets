@@ -62,7 +62,7 @@
   cursor: pointer;
 }
 
-.boton-accion-filtro.rojo { background: #e74c3c; }
+.boton-accion-filtro.rojo { background:#e74c3c; }
 .boton-accion-filtro.amarillo { background: #f1c40f; }
 .boton-accion-filtro.verde { background: #2ecc71; }
 

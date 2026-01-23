@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaHome, FaTicketAlt, FaCalendarAlt, FaSignOutAlt, FaBars, FaClock } from 'react-icons/fa';
 import { useAutenticacion } from '../../contextos/ContextoAutenticacion';
+import Notificaciones from '../notificaciones/Notificaciones';
 import './Layout.css';
 
 function LayoutAgente({ children, onCambiarPagina, paginaActual }) {
@@ -9,6 +10,11 @@ function LayoutAgente({ children, onCambiarPagina, paginaActual }) {
 
   const alternarMenu = () => {
     setMenuAbierto(!menuAbierto);
+  };
+
+  const handleVerTicket = (ticketId) => {
+    console.log('Ver ticket:', ticketId);
+    onCambiarPagina('mis-tickets');
   };
 
   return (
@@ -66,8 +72,11 @@ function LayoutAgente({ children, onCambiarPagina, paginaActual }) {
           <button className="boton-menu" onClick={alternarMenu}>
             <FaBars />
           </button>
-          <div className="encabezado-usuario">
-            <span>Bienvenido, <strong>{usuario?.nombre}</strong></span>
+          <div className="encabezado-derecha">
+            <Notificaciones onVerTicket={handleVerTicket} />
+            <div className="encabezado-usuario">
+              <span>Bienvenido, <strong>{usuario?.nombre}</strong></span>
+            </div>
           </div>
         </header>
 
