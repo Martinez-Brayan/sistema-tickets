@@ -15,20 +15,14 @@ function CheckInOut() {
     descripcion: ''
   });
 
-  // Tickets asignados al agente
+  // Tickets asignados al agente pruebas 
   const [ticketsAsignados] = useState([
-    { id: 5658, titulo: 'Factura al credito', empresa: 'empresa ', prioridad: 'Alta' },
-    { id: 5722, titulo: 'Facturas duplicadas en ICG', empresa: 'Panama', prioridad: 'Media' },
-    { id: 5784, titulo: 'Base de Datos ', empresa: ' empresa', prioridad: 'Alta' },
-    { id: 5835, titulo: 'Cliente Juan', empresa: ' empresa', prioridad: 'Baja' },
+
   ]);
 
-  // Historial de registros
+  // Historial de registros pruebas 
   const [historial, setHistorial] = useState([
-    { id: 1, ticketId: 5658, titulo: 'Factura al credito', fecha: '2026-01-20', horaInicio: '09:30', horaFin: '10:45', duracion: '1h 15m', descripcion: 'Revision de factura con el cliente' },
-    { id: 2, ticketId: 5722, titulo: 'Facturas duplicadas', fecha: '2026-01-20', horaInicio: '11:00', horaFin: '12:30', duracion: '1h 30m', descripcion: 'Correccion en el sistema' },
-    { id: 3, ticketId: 5784, titulo: 'Base de Datos', fecha: '2026-01-19', horaInicio: '14:00', horaFin: '16:00', duracion: '2h 00m', descripcion: 'Mantenimiento de base de datos' },
-    { id: 4, ticketId: 5658, titulo: 'Factura al credito', fecha: '2026-01-18', horaInicio: '08:00', horaFin: '09:30', duracion: '1h 30m', descripcion: 'Llamada con el cliente' },
+
   ]);
 
   // Calcular duracion

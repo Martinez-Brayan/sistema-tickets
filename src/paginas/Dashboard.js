@@ -10,13 +10,9 @@ function Dashboard() {
   const [modoGrafico, setModoGrafico] = useState('Grafico');
   const [categoriaGrafico, setCategoriaGrafico] = useState('Estado');
 
+  //PRUEBAS ERA PARA VER COMO IBA QUEDANDO TODO 
   const ticketsPorAtender = [
-    { id: 5658, titulo: 'Factura al credito', empresa: 'empresa....n', asignado: '', fechaCreacion: '29/04/2025 14:43', fechaAtencion: '' },
-    { id: 5722, titulo: 'Facturas ', empresa: 'empresa', asignado: '', fechaCreacion: '08/07/2025 14:20', fechaAtencion: '' },
-    { id: 5784, titulo: 'Base de Datos ', empresa: 'empresa.', asignado: '', fechaCreacion: '24/09/2025 10:45', fechaAtencion: '' },
-    { id: 5835, titulo: ' ', empresa: 'sA.', asignado: '', fechaCreacion: '06/11/2025 16:31', fechaAtencion: '' },
-    { id: 5837, titulo: 'Eliminar opcion ', empresa: 'empresa', asignado: '', fechaCreacion: '11/11/2025 13:55', fechaAtencion: '' },
-    { id: 5868, titulo: 'Gift Card', empresa: 'empresa', asignado: '', fechaCreacion: '26/11/2025 14:02', fechaAtencion: '' },
+    
   ];
 
   return (
@@ -71,7 +67,6 @@ function Dashboard() {
           <FaTicketAlt className="tarjeta-icono" />
           <div className="tarjeta-contenido">
             <span className="tarjeta-texto">Tickets Vigentes Totales</span>
-            <span className="tarjeta-numero">18</span>
           </div>
         </div>
       </div>
@@ -120,7 +115,6 @@ function Dashboard() {
             <div className="grafico-pastel">
               <div className="pastel">
                 <div className="pastel-centro">
-                  <span>61.11%</span>
                 </div>
               </div>
             </div>

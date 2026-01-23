@@ -21,19 +21,15 @@ function DashboardAgente() {
       <h1 style={{ color: '#1a1a2e', marginBottom: '20px' }}>Mi Dashboard</h1>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
         <div style={{ background: '#3498db', color: 'white', padding: '25px', borderRadius: '10px' }}>
-          <h3 style={{ margin: 0 }}>5</h3>
           <p style={{ margin: '5px 0 0' }}>Tickets Asignados</p>
         </div>
         <div style={{ background: '#f39c12', color: 'white', padding: '25px', borderRadius: '10px' }}>
-          <h3 style={{ margin: 0 }}>2</h3>
           <p style={{ margin: '5px 0 0' }}>En Proceso</p>
         </div>
         <div style={{ background: '#27ae60', color: 'white', padding: '25px', borderRadius: '10px' }}>
-          <h3 style={{ margin: 0 }}>12</h3>
           <p style={{ margin: '5px 0 0' }}>Resueltos Hoy</p>
         </div>
         <div style={{ background: '#e74c3c', color: 'white', padding: '25px', borderRadius: '10px' }}>
-          <h3 style={{ margin: 0 }}>1</h3>
           <p style={{ margin: '5px 0 0' }}>Urgentes</p>
         </div>
       </div>

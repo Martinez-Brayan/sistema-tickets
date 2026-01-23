@@ -9,12 +9,6 @@ function MiCalendario() {
   
   // Eventos del agente (simulados - en produccion vendrian del servidor)
   const [eventos] = useState([
-    { id: 1, titulo: 'Visita cliente', tipo: 'campo', fecha: '2026-01-20', horaInicio: '09:00', horaFin: '11:00', ubicacion: 'Oficinas', descripcion: 'Revision de equipos de red', agenteId: 2 },
-    { id: 2, titulo: 'Mantenimiento preventivo', tipo: 'campo', fecha: '2026-01-22', horaInicio: '08:00', horaFin: '12:00', ubicacion: 'Data Center Principal', descripcion: 'Revision de servidores', agenteId: 2 },
-    { id: 3, titulo: 'Instalacion de equipos', tipo: 'campo', fecha: '2026-01-25', horaInicio: '09:00', horaFin: '17:00', ubicacion: 'Panama', descripcion: 'Instalacion completa', agenteId: 2 },
-    { id: 4, titulo: 'Reunion con equipo', tipo: 'reunion', fecha: '2026-01-21', horaInicio: '14:00', horaFin: '15:00', ubicacion: 'Sala Virtual Teams', descripcion: 'Planificacion semanal', agenteId: 2 },
-    { id: 5, titulo: 'Capacitacion cliente', tipo: 'reunion', fecha: '2026-01-23', horaInicio: '10:00', horaFin: '12:00', ubicacion: 'Virtual', descripcion: 'Entrenamiento sistema nuevo', agenteId: 2 },
-    { id: 6, titulo: 'Soporte remoto', tipo: 'reunion', fecha: '2026-01-27', horaInicio: '15:00', horaFin: '16:30', ubicacion: 'Virtual', descripcion: 'Atencion cliente VIP', agenteId: 2 },
   ]);
 
   // Filtrar solo eventos del agente actual

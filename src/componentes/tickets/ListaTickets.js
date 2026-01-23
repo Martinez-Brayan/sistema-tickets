@@ -12,39 +12,6 @@ function ListaTickets({ esAgente = false, titulo = "Gestión de Tickets" }) {
 
   // Datos dummy para pruebas
   const [tickets, setTickets] = useState([
-    {
-      id: 1,
-      titulo: 'Error en facturación',
-      solicitante: 'Juan Pérez',
-      empresa: 'Empresa A',
-      agente: 'Agente 1',
-      estado: 'Abierto',
-      prioridad: 'Alta',
-      fechaCreacion: '2023-01-15T10:00:00',
-      descripcion: 'No puedo generar facturas del mes.'
-    },
-    {
-      id: 2,
-      titulo: 'Solicitud de acceso',
-      solicitante: 'María López',
-      empresa: 'Empresa B',
-      agente: 'Agente 1',
-      estado: 'En Proceso',
-      prioridad: 'Media',
-      fechaCreacion: '2023-01-16T14:30:00',
-      descripcion: 'Necesito acceso al módulo de reportes.'
-    },
-    {
-      id: 3,
-      titulo: 'Fallo en login',
-      solicitante: 'Carlos Ruiz',
-      empresa: 'Empresa C',
-      agente: null,
-      estado: 'En Espera de Usuario',
-      prioridad: 'Baja',
-      fechaCreacion: '2023-01-17T09:15:00',
-      descripcion: 'Olvide mi contraseña y no recibo el correo.'
-    }
   ]);
 
   // Filtrar tickets
@@ -215,5 +182,4 @@ function ListaTickets({ esAgente = false, titulo = "Gestión de Tickets" }) {
     </div>
   );
 }
-
 export default ListaTickets;

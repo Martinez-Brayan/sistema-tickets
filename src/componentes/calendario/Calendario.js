@@ -8,11 +8,11 @@ function Calendario() {
   const [agenteSeleccionado, setAgenteSeleccionado] = useState('todos');
   
   const [eventos, setEventos] = useState([
-    { id: 1, titulo: 'Visita cliente SOMOS MAX', agente: ' Ruiz', agenteId: 2, tipo: 'campo', fecha: '2026-01-20', horaInicio: '09:00', horaFin: '11:00', ubicacion: 'Oficinas SOMOS MAX' },
-    { id: 2, titulo: 'Reunion equipo desarrollo', agente: 'Maria Garcia', agenteId: 3, tipo: 'reunion', fecha: '2026-01-20', horaInicio: '14:00', horaFin: '15:30', ubicacion: 'Sala A' },
-    { id: 3, titulo: 'Mantenimiento preventivo', agente: ' Ruiz', agenteId: 2, tipo: 'campo', fecha: '2026-01-22', horaInicio: '08:00', horaFin: '12:00', ubicacion: 'Data Center' },
-    { id: 4, titulo: 'Capacitacion sistema', agente: 'Maria Garcia', agenteId: 3, tipo: 'reunion', fecha: '2026-01-23', horaInicio: '10:00', horaFin: '12:00', ubicacion: 'Virtual Teams' },
-    { id: 5, titulo: 'Instalacion equipos', agente: ' Ruiz', agenteId: 2, tipo: 'campo', fecha: '2026-01-25', horaInicio: '09:00', horaFin: '17:00', ubicacion: 'Panama Clinic' }
+    { id: 1, titulo: '', agente: ' ', agenteId: '', tipo: '', fecha: '', horaInicio: '', horaFin: '', ubicacion: '' },
+    { id: 2, titulo: '', agente: ' ', agenteId: '', tipo: '', fecha: '', horaInicio: '', horaFin: '', ubicacion: '' },
+    { id: 3, titulo: '', agente: ' ', agenteId: '', tipo: '', fecha: '', horaInicio: '', horaFin: '', ubicacion: '' },
+    { id: 4, titulo: '', agente: '', agenteId: '', tipo: '', fecha: '', horaInicio: '', horaFin: '', ubicacion: '' },
+    { id: 5, titulo: '', agente: ' ', agenteId: '', tipo: 'campo', fecha: '', horaInicio: '', horaFin: '', ubicacion: '' }
   ]);
 
   const [nuevoEvento, setNuevoEvento] = useState({
@@ -20,8 +20,8 @@ function Calendario() {
   });
 
   const agentes = [
-    { id: 2, nombre: ' Ruiz' },
-    { id: 3, nombre: 'Maria Garcia' }
+    { id: 2, nombre: ' ' },
+    { id: 3, nombre: '' }
   ];
 
   const mesAnterior = () => {
