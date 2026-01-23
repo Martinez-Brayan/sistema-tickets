@@ -140,5 +140,4 @@ function Notificaciones({ onVerTicket }) {
     </div>
   );
 }
-
 export default Notificaciones;
