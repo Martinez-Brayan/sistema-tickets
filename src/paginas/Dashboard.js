@@ -10,7 +10,7 @@ function Dashboard() {
   const [modoGrafico, setModoGrafico] = useState('Grafico');
   const [categoriaGrafico, setCategoriaGrafico] = useState('Estado');
 
-  //PRUEBAS ERA PARA VER COMO IBA QUEDANDO TODO 
+  //PRUEBAS ERA PARA VER COMO IBA QUEDANDO
   const ticketsPorAtender = [
     
   ];
