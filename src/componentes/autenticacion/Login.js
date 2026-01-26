@@ -59,23 +59,7 @@ function Login() {
           </button>
         </form>
 
-        <div className="login-ayuda">
-          <p><strong>Usuarios de prueba:</strong></p>
-          <div className="usuarios-prueba">
-            <div className="usuario-prueba">
-              <span className="rol-badge admin">Admin</span>
-              <span>admin@helpdesk.com / admin123</span>
-            </div>
-            <div className="usuario-prueba">
-              <span className="rol-badge agente">Agente</span>
-              <span>agente@helpdesk.com / agente123</span>
-            </div>
-            <div className="usuario-prueba">
-              <span className="rol-badge cliente">Cliente</span>
-              <span>cliente@helpdesk.com / cliente123</span>
-            </div>
-          </div>
-        </div>
+       
       </div>
     </div>
   );
