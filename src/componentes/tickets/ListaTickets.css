@@ -1,58 +1,35 @@
-/*estilos para la lista de tickets*/
-
-/* ListaTickets.css - Estilos para la lista de tickets */
-
 .lista-tickets {
-  background: white;
-  border-radius: 10px;
-  padding: 25px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
 }
 
-/* Encabezado */
-.tickets-encabezado {
+.lista-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
-.tickets-encabezado h1 {
+.lista-header h1 {
   margin: 0;
+  font-size: 24px;
   color: #1a1a2e;
-}
-
-.boton-nuevo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  background: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.boton-nuevo:hover {
-  background: #218838;
+  gap: 10px;
 }
 
 /* Filtros */
-.tickets-filtros {
+.lista-filtros {
   display: flex;
-  gap: 20px;
+  gap: 15px;
   margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
-.campo-busqueda {
+.filtro-busqueda {
+  position: relative;
   flex: 1;
   min-width: 250px;
-  position: relative;
 }
 
 .icono-busqueda {
@@ -63,186 +40,223 @@
   color: #999;
 }
 
-.campo-busqueda input {
+.filtro-busqueda input {
   width: 100%;
-  padding: 12px 12px 12px 40px;
+  padding: 10px 15px 10px 40px;
   border: 2px solid #e0e0e0;
-  border-radius: 5px;
+  border-radius: 6px;
   font-size: 14px;
-  box-sizing: border-box;
 }
 
-.campo-busqueda input:focus {
-  outline: none;
-  border-color: #4a90a4;
+.lista-filtros select {
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 150px;
 }
 
-.grupo-filtros {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.icono-filtro {
+/* Cargando */
+.cargando {
+  text-align: center;
+  padding: 60px 20px;
   color: #666;
 }
 
-.grupo-filtros select {
-  padding: 12px;
-  border: 2px solid #e0e0e0;
-  border-radius: 5px;
-  font-size: 14px;
-  background: white;
-  cursor: pointer;
+.spin {
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
 }
 
-.grupo-filtros select:focus {
-  outline: none;
-  border-color: #4a90a4;
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Sin tickets */
+.sin-tickets {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 10px;
+  color: #999;
+}
+
+.icono-vacio {
+  font-size: 60px;
+  margin-bottom: 15px;
+  opacity: 0.3;
 }
 
 /* Tabla */
-.tickets-tabla-contenedor {
-  overflow-x: auto;
-}
-
 .tickets-tabla {
   width: 100%;
   border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .tickets-tabla th,
 .tickets-tabla td {
-  padding: 15px;
+  padding: 12px 15px;
   text-align: left;
   border-bottom: 1px solid #eee;
 }
 
 .tickets-tabla th {
   background: #f8f9fa;
-  color: #333;
   font-weight: 600;
-  white-space: nowrap;
+  color: #333;
+  font-size: 13px;
 }
 
-.tickets-tabla tr:hover {
+.tickets-tabla tbody tr {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tickets-tabla tbody tr:hover {
   background: #f8f9fa;
 }
 
-.columna-titulo {
+.celda-folio {
+  font-weight: bold;
+  color: #3498db;
+}
+
+.celda-asunto {
   max-width: 250px;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.celda-fecha {
+  font-size: 12px;
+  color: #666;
   white-space: nowrap;
 }
 
-/* Estados */
-.estado {
-  padding: 5px 12px;
+/* Badges */
+.badge-estado, .badge-prioridad {
+  padding: 4px 10px;
   border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
 }
 
-.estado-abierto {
-  background: #e3f2fd;
-  color: #1976d2;
-}
+.estado-abierto { background: #e3f2fd; color: #1976d2; }
+.estado-proceso { background: #fff3e0; color: #f57c00; }
+.estado-espera { background: #f3e5f5; color: #7b1fa2; }
+.estado-resuelto { background: #e8f5e9; color: #388e3c; }
+.estado-cerrado { background: #eceff1; color: #607d8b; }
 
-.estado-proceso {
-  background: #fff3e0;
-  color: #f57c00;
-}
+.prioridad-baja { background: #e8f5e9; color: #388e3c; }
+.prioridad-media { background: #fff3e0; color: #f57c00; }
+.prioridad-alta { background: #ffebee; color: #d32f2f; }
+.prioridad-urgente { background: #d32f2f; color: white; }
 
-.estado-espera {
-  background: #f3e5f5;
-  color: #7b1fa2;
-}
-
-.estado-resuelto {
-  background: #e8f5e9;
-  color: #388e3c;
-}
-
-/* Prioridades */
-.prioridad {
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.prioridad-alta {
-  background: #ffebee;
-  color: #d32f2f;
-}
-
-.prioridad-media {
-  background: #fff3e0;
-  color: #f57c00;
-}
-
-.prioridad-baja {
-  background: #e8f5e9;
-  color: #388e3c;
+.sin-asignar {
+  color: #999;
+  font-style: italic;
 }
 
 /* Acciones */
-.columna-acciones {
-  white-space: nowrap;
+.celda-acciones {
+  display: flex;
+  gap: 5px;
 }
 
-.boton-accion {
-  padding: 8px;
+.btn-accion {
+  padding: 6px 10px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  margin-right: 5px;
-  transition: all 0.3s;
-}
-
-.boton-ver {
-  background: #e3f2fd;
-  color: #1976d2;
-}
-
-.boton-ver:hover {
-  background: #1976d2;
-  color: white;
-}
-
-.boton-editar {
-  background: #fff3e0;
-  color: #f57c00;
-}
-
-.boton-editar:hover {
-  background: #f57c00;
-  color: white;
-}
-
-.boton-eliminar {
-  background: #ffebee;
-  color: #d32f2f;
-}
-
-.boton-eliminar:hover {
-  background: #d32f2f;
-  color: white;
-}
-
-/* Sin resultados */
-.sin-resultados {
-  text-align: center;
-  padding: 40px;
-  color: #666;
-}
-
-/* Resumen */
-.tickets-resumen {
-  margin-top: 20px;
-  text-align: right;
-  color: #666;
   font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-accion.ver { background: #e3f2fd; color: #1976d2; }
+.btn-accion.ver:hover { background: #bbdefb; }
+
+.btn-accion.asignar { background: #e8f5e9; color: #388e3c; }
+.btn-accion.asignar:hover { background: #c8e6c9; }
+
+.btn-accion.eliminar { background: #ffebee; color: #d32f2f; }
+.btn-accion.eliminar:hover { background: #ffcdd2; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-contenido {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
+}
+
+.modal-contenido h3 {
+  margin: 0 0 15px;
+}
+
+.select-agente {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  margin: 15px 0;
+}
+
+.modal-acciones {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.btn-cancelar {
+  padding: 10px 20px;
+  background: #e0e0e0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-confirmar {
+  padding: 10px 20px;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-confirmar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .tickets-tabla {
+    display: block;
+    overflow-x: auto;
+  }
 }
