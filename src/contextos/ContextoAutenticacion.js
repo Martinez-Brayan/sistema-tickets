@@ -1,78 +1,85 @@
-
-// Usuarios de prueba para poder cambiar entre roles 
- //para ver como van quedando las paginas
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authService } from '../servicios/supabase';
 
 const ContextoAutenticacion = createContext();
 
-const USUARIOS_PRUEBA = [
-  {
-    id: 1,
-    correo: 'admin@helpdesk.com',
-    contrasena: 'admin123',
-    nombre: 'Administrador General',
-    rol: 'administrador'
-  },
-  {
-    id: 2,
-    correo: 'agente@helpdesk.com',
-    contrasena: 'agente123',
-    nombre: ' Ruiz',
-    rol: 'agente'
-  },
-  {
-    id: 3,
-    correo: 'agente2@helpdesk.com',
-    contrasena: 'agente123',
-    nombre: 'Maria Garcia',
-    rol: 'agente'
-  },
-  {
-    id: 4,
-    correo: 'cliente@helpdesk.com',
-    contrasena: 'cliente123',
-    nombre: ' Perez',
-    rol: 'cliente'
-  },
-  {
-    id: 5,
-    correo: 'cliente2@helpdesk.com',
-    contrasena: 'cliente123',
-    nombre: ' Lopez',
-    rol: 'cliente'
-  }
-];
-
 export function ProveedorAutenticacion({ children }) {
   const [usuario, setUsuario] = useState(null);
-  const [autenticado, setAutenticado] = useState(false);
+  const [cargando, setCargando] = useState(true);
 
-  const iniciarSesion = (correo, contrasena) => {
-    const usuarioEncontrado = USUARIOS_PRUEBA.find(
-      u => u.correo === correo && u.contrasena === contrasena
-    );
+  // Verificar sesión al cargar
+  useEffect(() => {
+    const usuarioGuardado = localStorage.getItem('usuario');
+    if (usuarioGuardado) {
+      setUsuario(JSON.parse(usuarioGuardado));
+    }
+    setCargando(false);
+  }, []);
 
-    if (usuarioEncontrado) {
-      setUsuario(usuarioEncontrado);
-      setAutenticado(true);
-      return { exito: true, usuario: usuarioEncontrado };
-    } else {
-      return { exito: false, mensaje: 'Correo o contrasena incorrectos' };
+  // Iniciar sesión con Supabase
+  const iniciarSesion = async (correo, contrasena) => {
+    try {
+      const { usuario: usuarioDB } = await authService.iniciarSesion(correo, contrasena);
+      
+      // Mapear usuario para el frontend
+      const usuarioMapeado = {
+        id: usuarioDB.id,
+        nombre: `${usuarioDB.nombre} ${usuarioDB.apellido || ''}`.trim(),
+        correo: usuarioDB.email,
+        rol: mapearRol(usuarioDB.rol),
+        rolOriginal: usuarioDB.rol,
+        departamentoId: usuarioDB.departamentoId
+      };
+
+      setUsuario(usuarioMapeado);
+      localStorage.setItem('usuario', JSON.stringify(usuarioMapeado));
+      localStorage.setItem('usuarioId', usuarioDB.id);
+
+      return { exito: true, usuario: usuarioMapeado };
+    } catch (error) {
+      console.error('Error de login:', error);
+      return { exito: false, mensaje: error.message };
     }
   };
 
-  const cerrarSesion = () => {
-    setUsuario(null);
-    setAutenticado(false);
+  // Mapear roles de BD a roles del frontend
+  const mapearRol = (rolBD) => {
+    switch (rolBD) {
+      case 'ADMIN':
+      case 'JEFE':
+        return 'administrador';
+      case 'AGENTE':
+        return 'agente';
+      case 'CLIENTE':
+        return 'cliente';
+      default:
+        return 'cliente';
+    }
   };
 
+  // Cerrar sesión
+  const cerrarSesion = async () => {
+    try {
+      await authService.cerrarSesion();
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+    
+    setUsuario(null);
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('usuarioId');
+  };
+
+  // Verificar rol
   const tieneRol = (rol) => {
     return usuario?.rol === rol;
   };
 
   const valor = {
     usuario,
-    autenticado,
+    usuarioId: usuario?.id,
+    cargando,
+    autenticado: !!usuario,
     iniciarSesion,
     cerrarSesion,
     tieneRol
