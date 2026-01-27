@@ -1,254 +1,218 @@
-.mi-calendario {
+/* Usamos .contenedor-calendario-agente como prefijo para aislar los estilos */
+.contenedor-calendario-agente {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 25px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* Resumen del dia */
-.resumen-dia {
+/* --- TARJETAS DE RESUMEN --- */
+.contenedor-calendario-agente .resumen-dia {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
 }
 
-.resumen-tarjeta {
+.contenedor-calendario-agente .resumen-tarjeta {
   display: flex;
   align-items: center;
   gap: 15px;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 12px;
   color: white;
 }
 
-.resumen-tarjeta.hoy { 
-  background: linear-gradient(135deg, #3498db, #2980b9);
- }
+.contenedor-calendario-agente .resumen-tarjeta.hoy { background: linear-gradient(135deg, #3498db, #2980b9); }
+.contenedor-calendario-agente .resumen-tarjeta.campo { background: linear-gradient(135deg, #f39c12, #e67e22); }
+.contenedor-calendario-agente .resumen-tarjeta.reunion { background: linear-gradient(135deg, #27ae60, #229954); }
+.contenedor-calendario-agente .resumen-tarjeta.atencion { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
 
-.resumen-tarjeta.campo { 
-  background: linear-gradient(135deg, #f39c12, #e67e22); 
-}
-
-.resumen-tarjeta.reunion { 
-  background: linear-gradient(135deg, #27ae60, #229954); 
-}
-
-.resumen-icono { 
-  font-size: 32px; 
-  opacity: 0.9; 
-}
-
-.resumen-info h3 { 
-  margin: 0; 
-  font-size: 24px;
- }
-.resumen-info p 
-{ margin: 5px 0 0;
-   opacity: 0.9; 
-   font-size: 14px;
-   }
-
-/* Contenido principal */
-.calendario-contenido {
+/* --- ESTRUCTURA DEL CALENDARIO (Solución al error visual) --- */
+.contenedor-calendario-agente .calendario-contenido {
   display: grid;
   grid-template-columns: 1fr 350px;
-  gap: 20px;
+  gap: 25px;
 }
 
-@media (max-width: 900px) {
-  .calendario-contenido {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Calendario */
-.calendario-principal {
+.contenedor-calendario-agente .calendario-principal {
   background: white;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
-.calendario-encabezado h2 { margin: 0 0 20px; color: #1a1a2e; }
-
-.calendario-controles {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.navegacion-fecha {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.navegacion-fecha button {
-  background: #f0f0f0;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.navegacion-fecha button:hover { background: #e0e0e0; }
-
-.navegacion-fecha h3 { margin: 0; min-width: 160px; text-align: center; }
-
-.boton-hoy {
-  padding: 8px 16px;
-  background: #3498db;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.boton-hoy:hover { background: #2980b9; }
-
-.calendario-grid {
-  border: 1px solid #e0e0e0;
+/* IMPORTANTE: Forzamos el Grid con !important para evitar interferencias externas */
+.contenedor-calendario-agente .calendario-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  border: 1px solid #edf2f7;
   border-radius: 8px;
   overflow: hidden;
 }
 
-.dias-semana {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  background: #f8f9fa;
+.contenedor-calendario-agente .dias-semana {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  background: #1a1a2e; /* Color oscuro para encabezado */
+  color: white;
 }
 
-.dia-semana {
+.contenedor-calendario-agente .dia-semana {
   padding: 12px;
   text-align: center;
-  font-weight: 600;
-  color: #666;
-  font-size: 13px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
-.dias-mes {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-}
-
-.dia-celda {
-  min-height: 70px;
-  padding: 8px;
-  border: 1px solid #f0f0f0;
+.contenedor-calendario-agente .dias-mes {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
   background: white;
+  width: 100% !important;
+}
+
+.contenedor-calendario-agente .dia-celda {
+  min-height: 100px;
+  padding: 8px;
+  border: 0.5px solid #f1f3f5;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
+  background: white;
 }
 
-.dia-celda.otro-mes { background: #fafafa; }
-.dia-celda.otro-mes .numero-dia { color: #ccc; }
-
-.dia-celda.hoy { background: #e3f2fd; }
-.dia-celda.hoy .numero-dia {
+/* --- ESTADOS DE LAS CELDAS --- */
+.contenedor-calendario-agente .dia-celda.otro-mes { background: #fbfbfc; color: #cbd5e0; }
+.contenedor-calendario-agente .dia-celda.hoy { background: #ebf8ff; }
+.contenedor-calendario-agente .dia-celda.hoy .numero-dia {
   background: #3498db;
   color: white;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.numero-dia { font-weight: 500; font-size: 14px; }
-
-.eventos-dia {
+/* --- EVENTOS (Puntitos) --- */
+.contenedor-calendario-agente .eventos-dia {
   display: flex;
-  gap: 4px;
-  margin-top: 5px;
   flex-wrap: wrap;
+  gap: 4px;
+  margin-top: auto;
+  width: 100%;
   justify-content: center;
 }
 
-.evento-punto {
+.contenedor-calendario-agente .evento-punto {
   width: 8px;
   height: 8px;
   border-radius: 50%;
 }
 
-.evento-punto.campo { background: #f39c12; }
-.evento-punto.reunion { background: #27ae60; }
-
-/* Proximos eventos */
-.proximos-eventos {
-  background: white;
+/* --- LISTA LATERAL --- */
+.contenedor-calendario-agente .evento-item {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  margin-bottom: 12px;
   border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border: 1px solid #f1f3f5;
+  border-left-width: 5px;
+  background: #fff;
 }
 
-.proximos-eventos h3 { margin: 0 0 20px; color: #1a1a2e; }
-
-.lista-eventos {
+/* Contenedor lateral de próximos eventos */
+.contenedor-calendario-agente .proximos-eventos {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.04);
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.sin-eventos {
-  text-align: center;
-  color: #999;
-  padding: 30px;
+/* Título de la sección */
+.contenedor-calendario-agente .proximos-eventos h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  color: #1a202c;
+  font-weight: 700;
 }
 
-.evento-item {
-  display: flex;
-  align-items: flex-start;
+/* Tarjeta individual de evento */
+.contenedor-calendario-agente .evento-item {
+  display: flex !important; /* Forzamos que sea flex horizontal */
+  align-items: center;
   gap: 15px;
   padding: 15px;
-  border-radius: 8px;
-  border-left: 4px solid;
-  position: relative;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #f1f3f5;
+  border-left: 5px solid #3498db; /* Color por defecto */
+  transition: transform 0.2s ease;
 }
 
-.evento-item.campo { background: #fff8e1; border-color: #f39c12; }
-.evento-item.reunion { background: #e8f5e9; border-color: #27ae60; }
-
-.evento-fecha {
-  text-align: center;
-  min-width: 45px;
+.contenedor-calendario-agente .evento-item:hover {
+  transform: translateX(5px);
 }
 
-.evento-fecha .dia {
-  display: block;
-  font-size: 22px;
-  font-weight: bold;
-  color: #333;
+/* Bloque de la fecha (Izquierda) */
+.contenedor-calendario-agente .evento-fecha {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
+  border-right: 1px solid #eee;
+  padding-right: 15px;
 }
 
-.evento-fecha .mes {
-  font-size: 11px;
-  color: #666;
-  text-transform: uppercase;
+.contenedor-calendario-agente .evento-fecha .dia {
+  font-size: 24px;
+  font-weight: 800;
+  color: #2d3748;
+  line-height: 1;
 }
 
-.evento-detalle { flex: 1; }
-.evento-detalle h4 { margin: 0 0 8px; font-size: 14px; color: #333; }
-.evento-detalle p {
-  margin: 4px 0;
+.contenedor-calendario-agente .evento-fecha .mes {
   font-size: 12px;
-  color: #666;
+  text-transform: uppercase;
+  color: #718096;
+  font-weight: 600;
+}
+
+/* Bloque de detalles (Derecha) */
+.contenedor-calendario-agente .evento-detalle {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contenedor-calendario-agente .evento-detalle h4 {
+  margin: 0;
+  font-size: 15px;
+  color: #1a202c;
+  font-weight: 600;
+}
+
+.contenedor-calendario-agente .evento-detalle p {
+  margin: 0;
+  font-size: 13px;
+  color: #4a5568;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
-.tipo-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 500;
-  color: white;
+/* Iconos dentro de los detalles */
+.contenedor-calendario-agente .evento-detalle svg {
+  color: #a0aec0;
 }
-
-.tipo-badge.campo { background: #f39c12; }
-.tipo-badge.reunion { background: #27ae60; }

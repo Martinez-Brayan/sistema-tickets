@@ -63,6 +63,7 @@ if (!passwordValido) {
 };
 
 
+
 // SERVICIOS DE TICKETS
 
 export const ticketService = {
@@ -348,6 +349,150 @@ export const categoriaService = {
 
     if (error) throw error;
     return data;
+  }
+};
+
+
+// =============================================
+// SERVICIOS DE EVENTOS (CALENDARIO)
+// =============================================
+export const eventoService = {
+  // Crear evento
+  async crear(datosEvento, creadorId) {
+    const evento = {
+      id: crypto.randomUUID(),
+      titulo: datosEvento.titulo,
+      descripcion: datosEvento.descripcion || '',
+      tipo: datosEvento.tipo,
+      fechaInicio: datosEvento.fechaInicio,
+      fechaFin: datosEvento.fechaFin || null,
+      todoElDia: datosEvento.todoElDia || false,
+      agenteId: datosEvento.agenteId,
+      ticketId: datosEvento.ticketId || null,
+      clienteNombre: datosEvento.clienteNombre || '',
+      ubicacion: datosEvento.ubicacion || '',
+      color: datosEvento.color || '#3498db',
+      creadorId,
+      fechaCreacion: new Date().toISOString(),
+      fechaActualizacion: new Date().toISOString()
+    };
+
+    const { data, error } = await supabase
+      .from('eventos')
+      .insert(evento)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Notificar al agente si es diferente al creador
+    if (datosEvento.agenteId && datosEvento.agenteId !== creadorId) {
+      try {
+        await supabase.from('notificaciones').insert({
+          id: crypto.randomUUID(),
+          usuarioId: datosEvento.agenteId,
+          tipo: 'TICKET_ASIGNADO', // Usar tipo existente
+          titulo: `Nuevo evento: ${datosEvento.titulo}`,
+          mensaje: `${datosEvento.tipo} - ${new Date(datosEvento.fechaInicio).toLocaleDateString('es-ES')}`,
+          enlace: `/mi-calendario`,
+          leida: false,
+          fechaCreacion: new Date().toISOString()
+        });
+      } catch (notifError) {
+        console.error('Error al crear notificación:', notifError);
+      }
+    }
+
+    return data;
+  },
+
+  // Obtener eventos por rango de fechas
+  async obtenerPorRango(fechaInicio, fechaFin, agenteId = null) {
+    let query = supabase
+      .from('eventos')
+      .select(`
+        *,
+        agente:agenteId(id, nombre, apellido),
+        creador:creadorId(id, nombre, apellido)
+      `)
+      .gte('fechaInicio', fechaInicio)
+      .lte('fechaInicio', fechaFin)
+      .order('fechaInicio', { ascending: true });
+
+    if (agenteId) {
+      query = query.eq('agenteId', agenteId);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  },
+
+  // Obtener eventos de hoy para un agente
+  async obtenerEventosHoy(agenteId) {
+    const hoy = new Date();
+    const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()).toISOString();
+    const finHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59).toISOString();
+
+    const { data, error } = await supabase
+      .from('eventos')
+      .select('*')
+      .eq('agenteId', agenteId)
+      .gte('fechaInicio', inicioHoy)
+      .lte('fechaInicio', finHoy)
+      .order('fechaInicio', { ascending: true });
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Obtener todos los eventos (para admin)
+  async obtenerTodos() {
+    const { data, error } = await supabase
+      .from('eventos')
+      .select(`
+        *,
+        agente:agenteId(id, nombre, apellido),
+        creador:creadorId(id, nombre, apellido)
+      `)
+      .order('fechaInicio', { ascending: true });
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Actualizar evento
+  async actualizar(id, datos) {
+    const { data, error } = await supabase
+      .from('eventos')
+      .update({ ...datos, fechaActualizacion: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Eliminar evento
+  async eliminar(id) {
+    const { error } = await supabase
+      .from('eventos')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+  },
+
+  // Suscribirse a cambios de eventos
+  suscribirCambios(agenteId, callback) {
+    return supabase
+      .channel(`eventos-${agenteId}`)
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'eventos', filter: `agenteId=eq.${agenteId}` }, 
+        callback
+      )
+      .subscribe();
   }
 };
 
