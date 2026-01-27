@@ -373,3 +373,29 @@
 .boton-guardar:hover {
   background: #219a52;
 }
+
+.cargando{
+  text-align: center;
+  padding: 60px;
+  color: #666;
+}
+
+.spin{
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin{
+from { transform: rotate(0deg);}
+to {transform: rotate(360deg);}
+}
+
+.fecha-acceso{
+  color: #666;
+  font-size: 13px;
+}
+
+.boton-guardar:disabled{
+  opacity: 0.7;
+  cursor: not-allowed;
+}

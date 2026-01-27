@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
-import { FaPlus, FaSearch, FaEdit, FaTrash, FaUserShield, FaUser, FaHeadset, FaBuilding, FaTimes, FaSave } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaPlus, FaSearch, FaEdit, FaTrash, FaUserShield, FaUser, FaHeadset, FaBuilding, FaTimes, FaSave, FaSpinner } from 'react-icons/fa';
+import { usuarioService } from '../../servicios/supabase';
 import './ListaUsuarios.css';
 
 function ListaUsuarios() {
   const [busqueda, setBusqueda] = useState('');
   const [filtroRol, setFiltroRol] = useState('todos');
   const [vistaActual, setVistaActual] = useState('usuarios');
+  const [cargando, setCargando] = useState(true);
+  const [guardando, setGuardando] = useState(false);
   
   // Modal states
   const [mostrarModalUsuario, setMostrarModalUsuario] = useState(false);
@@ -13,18 +16,18 @@ function ListaUsuarios() {
   const [usuarioEditando, setUsuarioEditando] = useState(null);
   const [empresaEditando, setEmpresaEditando] = useState(null);
 
-  // Datos - estos vendran de Supabase
+  // Datos de Supabase
   const [usuarios, setUsuarios] = useState([]);
   const [empresas, setEmpresas] = useState([]);
 
   // Formulario usuario
   const [formUsuario, setFormUsuario] = useState({
     nombre: '',
-    correo: '',
-    contrasena: '',
-    rol: 'cliente',
-    empresaId: '',
-    telefono: '',
+    apellido: '',
+    email: '',
+    password: '',
+    rol: 'CLIENTE',
+    departamentoId: '',
     activo: true
   });
 
@@ -39,10 +42,28 @@ function ListaUsuarios() {
     activo: true
   });
 
+  // Cargar datos al montar
+  useEffect(() => {
+    cargarDatos();
+  }, []);
+
+  const cargarDatos = async () => {
+    try {
+      setCargando(true);
+      const data = await usuarioService.obtenerTodos();
+      setUsuarios(data || []);
+    } catch (error) {
+      console.error('Error al cargar usuarios:', error);
+    } finally {
+      setCargando(false);
+    }
+  };
+
   // Filtrar usuarios
   const usuariosFiltrados = usuarios.filter(usuario => {
-    const coincideBusqueda = usuario.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
-                            usuario.correo?.toLowerCase().includes(busqueda.toLowerCase());
+    const nombreCompleto = `${usuario.nombre} ${usuario.apellido || ''}`.toLowerCase();
+    const coincideBusqueda = nombreCompleto.includes(busqueda.toLowerCase()) ||
+                            usuario.email?.toLowerCase().includes(busqueda.toLowerCase());
     const coincideRol = filtroRol === 'todos' || usuario.rol === filtroRol;
     return coincideBusqueda && coincideRol;
   });
@@ -58,11 +79,11 @@ function ListaUsuarios() {
     setUsuarioEditando(null);
     setFormUsuario({
       nombre: '',
-      correo: '',
-      contrasena: '',
-      rol: 'cliente',
-      empresaId: '',
-      telefono: '',
+      apellido: '',
+      email: '',
+      password: '',
+      rol: 'CLIENTE',
+      departamentoId: '',
       activo: true
     });
     setMostrarModalUsuario(true);
@@ -73,52 +94,81 @@ function ListaUsuarios() {
     setUsuarioEditando(usuario);
     setFormUsuario({
       nombre: usuario.nombre,
-      correo: usuario.correo,
-      contrasena: '',
+      apellido: usuario.apellido || '',
+      email: usuario.email,
+      password: '',
       rol: usuario.rol,
-      empresaId: usuario.empresaId || '',
-      telefono: usuario.telefono || '',
+      departamentoId: usuario.departamentoId || '',
       activo: usuario.activo
     });
     setMostrarModalUsuario(true);
   };
 
   // Guardar usuario
-  const guardarUsuario = (e) => {
+  const guardarUsuario = async (e) => {
     e.preventDefault();
     
-    if (!formUsuario.nombre || !formUsuario.correo) {
+    if (!formUsuario.nombre || !formUsuario.email) {
       alert('Complete los campos obligatorios');
       return;
     }
 
-    if (!usuarioEditando && !formUsuario.contrasena) {
-      alert('Ingrese una contrasena');
+    if (!usuarioEditando && !formUsuario.password) {
+      alert('Ingrese una contraseña');
       return;
     }
 
-    if (usuarioEditando) {
-      // Editar
-      setUsuarios(usuarios.map(u => 
-        u.id === usuarioEditando.id ? { ...u, ...formUsuario } : u
-      ));
-    } else {
-      // Nuevo
-      const nuevoUsuario = {
-        id: Date.now(),
-        ...formUsuario,
-        fechaCreacion: new Date().toISOString()
-      };
-      setUsuarios([...usuarios, nuevoUsuario]);
-    }
+    setGuardando(true);
 
-    setMostrarModalUsuario(false);
+    try {
+      if (usuarioEditando) {
+        // Editar
+        const datosActualizar = {
+          nombre: formUsuario.nombre,
+          apellido: formUsuario.apellido,
+          email: formUsuario.email,
+          rol: formUsuario.rol,
+          activo: formUsuario.activo
+        };
+        
+        // Solo actualizar password si se ingresó uno nuevo
+        if (formUsuario.password) {
+          datosActualizar.password = formUsuario.password;
+        }
+
+        await usuarioService.actualizar(usuarioEditando.id, datosActualizar);
+      } else {
+        // Nuevo
+        await usuarioService.crear({
+          nombre: formUsuario.nombre,
+          apellido: formUsuario.apellido,
+          email: formUsuario.email,
+          password: formUsuario.password,
+          rol: formUsuario.rol,
+          activo: formUsuario.activo
+        });
+      }
+
+      setMostrarModalUsuario(false);
+      await cargarDatos();
+    } catch (error) {
+      console.error('Error al guardar usuario:', error);
+      alert('Error al guardar: ' + error.message);
+    } finally {
+      setGuardando(false);
+    }
   };
 
   // Eliminar usuario
-  const eliminarUsuario = (id) => {
-    if (window.confirm('¿Eliminar este usuario?')) {
-      setUsuarios(usuarios.filter(u => u.id !== id));
+  const eliminarUsuario = async (id) => {
+    if (!window.confirm('¿Eliminar este usuario?')) return;
+
+    try {
+      await usuarioService.eliminar(id);
+      await cargarDatos();
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+      alert('Error al eliminar usuario');
     }
   };
 
@@ -152,7 +202,7 @@ function ListaUsuarios() {
     setMostrarModalEmpresa(true);
   };
 
-  // Guardar empresa
+  // Guardar empresa (por ahora local, falta tabla en Supabase)
   const guardarEmpresa = (e) => {
     e.preventDefault();
     
@@ -162,12 +212,10 @@ function ListaUsuarios() {
     }
 
     if (empresaEditando) {
-      // Editar
       setEmpresas(empresas.map(e => 
         e.id === empresaEditando.id ? { ...e, ...formEmpresa } : e
       ));
     } else {
-      // Nueva
       const nuevaEmpresa = {
         id: Date.now(),
         ...formEmpresa,
@@ -181,7 +229,7 @@ function ListaUsuarios() {
 
   // Eliminar empresa
   const eliminarEmpresa = (id) => {
-    if (window.confirm('¿Eliminar esta empresa? Los usuarios asociados quedaran sin empresa.')) {
+    if (window.confirm('¿Eliminar esta empresa?')) {
       setEmpresas(empresas.filter(e => e.id !== id));
     }
   };
@@ -189,17 +237,27 @@ function ListaUsuarios() {
   // Obtener icono de rol
   const obtenerIconoRol = (rol) => {
     switch (rol) {
-      case 'administrador': return <FaUserShield className="icono-rol admin" />;
-      case 'agente': return <FaHeadset className="icono-rol agente" />;
-      case 'cliente': return <FaUser className="icono-rol cliente" />;
-      default: return <FaUser className="icono-rol" />;
+      case 'ADMIN': 
+      case 'JEFE':
+        return <FaUserShield className="icono-rol admin" />;
+      case 'AGENTE': 
+        return <FaHeadset className="icono-rol agente" />;
+      case 'CLIENTE': 
+        return <FaUser className="icono-rol cliente" />;
+      default: 
+        return <FaUser className="icono-rol" />;
     }
   };
 
-  // Obtener nombre de empresa
-  const obtenerNombreEmpresa = (empresaId) => {
-    const empresa = empresas.find(e => e.id === empresaId);
-    return empresa ? empresa.nombre : '-';
+  // Obtener etiqueta de rol
+  const obtenerEtiquetaRol = (rol) => {
+    const etiquetas = {
+      'ADMIN': 'Administrador',
+      'JEFE': 'Jefe',
+      'AGENTE': 'Agente',
+      'CLIENTE': 'Cliente'
+    };
+    return etiquetas[rol] || rol;
   };
 
   return (
@@ -224,7 +282,7 @@ function ListaUsuarios() {
       {vistaActual === 'usuarios' && (
         <>
           <div className="usuarios-encabezado">
-            <h1>Gestion de Usuarios</h1>
+            <h1>Gestión de Usuarios</h1>
             <button className="boton-nuevo" onClick={abrirModalNuevoUsuario}>
               <FaPlus /> Nuevo Usuario
             </button>
@@ -243,13 +301,18 @@ function ListaUsuarios() {
 
             <select value={filtroRol} onChange={(e) => setFiltroRol(e.target.value)}>
               <option value="todos">Todos los roles</option>
-              <option value="administrador">Administrador</option>
-              <option value="agente">Agente</option>
-              <option value="cliente">Cliente</option>
+              <option value="ADMIN">Administrador</option>
+              <option value="JEFE">Jefe</option>
+              <option value="AGENTE">Agente</option>
+              <option value="CLIENTE">Cliente</option>
             </select>
           </div>
 
-          {usuarios.length === 0 ? (
+          {cargando ? (
+            <div className="cargando">
+              <FaSpinner className="spin" /> Cargando usuarios...
+            </div>
+          ) : usuarios.length === 0 ? (
             <div className="sin-datos">
               <FaUser className="sin-datos-icono" />
               <p>No hay usuarios registrados</p>
@@ -264,8 +327,8 @@ function ListaUsuarios() {
                   <tr>
                     <th>Usuario</th>
                     <th>Rol</th>
-                    <th>Empresa</th>
                     <th>Estado</th>
+                    <th>Último Acceso</th>
                     <th>Acciones</th>
                   </tr>
                 </thead>
@@ -274,24 +337,31 @@ function ListaUsuarios() {
                     <tr key={usuario.id}>
                       <td>
                         <div className="usuario-info">
-                          <div className="usuario-avatar">{usuario.nombre?.charAt(0)}</div>
+                          <div className="usuario-avatar">
+                            {usuario.nombre?.charAt(0)}{usuario.apellido?.charAt(0)}
+                          </div>
                           <div>
-                            <div className="usuario-nombre">{usuario.nombre}</div>
-                            <div className="usuario-correo">{usuario.correo}</div>
+                            <div className="usuario-nombre">{usuario.nombre} {usuario.apellido}</div>
+                            <div className="usuario-correo">{usuario.email}</div>
                           </div>
                         </div>
                       </td>
                       <td>
                         <div className="usuario-rol">
                           {obtenerIconoRol(usuario.rol)}
-                          <span>{usuario.rol}</span>
+                          <span>{obtenerEtiquetaRol(usuario.rol)}</span>
                         </div>
                       </td>
-                      <td>{obtenerNombreEmpresa(usuario.empresaId)}</td>
                       <td>
                         <span className={`estado-badge ${usuario.activo ? 'activo' : 'inactivo'}`}>
                           {usuario.activo ? 'Activo' : 'Inactivo'}
                         </span>
+                      </td>
+                      <td className="fecha-acceso">
+                        {usuario.ultimoAcceso 
+                          ? new Date(usuario.ultimoAcceso).toLocaleDateString('es-ES')
+                          : 'Nunca'
+                        }
                       </td>
                       <td className="columna-acciones">
                         <button className="boton-accion editar" onClick={() => abrirModalEditarUsuario(usuario)}>
@@ -314,7 +384,7 @@ function ListaUsuarios() {
       {vistaActual === 'empresas' && (
         <>
           <div className="usuarios-encabezado">
-            <h1>Gestion de Empresas</h1>
+            <h1>Gestión de Empresas</h1>
             <button className="boton-nuevo" onClick={abrirModalNuevaEmpresa}>
               <FaPlus /> Nueva Empresa
             </button>
@@ -348,7 +418,7 @@ function ListaUsuarios() {
                     <th>Empresa</th>
                     <th>RUC</th>
                     <th>Contacto</th>
-                    <th>Telefono</th>
+                    <th>Teléfono</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                   </tr>
@@ -402,35 +472,47 @@ function ListaUsuarios() {
             </div>
 
             <form onSubmit={guardarUsuario} className="formulario-modal">
-              <div className="campo-grupo">
-                <label>Nombre completo *</label>
-                <input
-                  type="text"
-                  value={formUsuario.nombre}
-                  onChange={(e) => setFormUsuario({...formUsuario, nombre: e.target.value})}
-                  placeholder="Nombre del usuario"
-                  required
-                />
+              <div className="campo-fila">
+                <div className="campo-grupo">
+                  <label>Nombre *</label>
+                  <input
+                    type="text"
+                    value={formUsuario.nombre}
+                    onChange={(e) => setFormUsuario({...formUsuario, nombre: e.target.value})}
+                    placeholder="Nombre"
+                    required
+                  />
+                </div>
+
+                <div className="campo-grupo">
+                  <label>Apellido</label>
+                  <input
+                    type="text"
+                    value={formUsuario.apellido}
+                    onChange={(e) => setFormUsuario({...formUsuario, apellido: e.target.value})}
+                    placeholder="Apellido"
+                  />
+                </div>
               </div>
 
               <div className="campo-fila">
                 <div className="campo-grupo">
-                  <label>Correo electronico *</label>
+                  <label>Correo electrónico *</label>
                   <input
                     type="email"
-                    value={formUsuario.correo}
-                    onChange={(e) => setFormUsuario({...formUsuario, correo: e.target.value})}
+                    value={formUsuario.email}
+                    onChange={(e) => setFormUsuario({...formUsuario, email: e.target.value})}
                     placeholder="correo@ejemplo.com"
                     required
                   />
                 </div>
 
                 <div className="campo-grupo">
-                  <label>{usuarioEditando ? 'Nueva contrasena (dejar vacio para no cambiar)' : 'Contrasena *'}</label>
+                  <label>{usuarioEditando ? 'Nueva contraseña (opcional)' : 'Contraseña *'}</label>
                   <input
                     type="password"
-                    value={formUsuario.contrasena}
-                    onChange={(e) => setFormUsuario({...formUsuario, contrasena: e.target.value})}
+                    value={formUsuario.password}
+                    onChange={(e) => setFormUsuario({...formUsuario, password: e.target.value})}
                     placeholder="********"
                     required={!usuarioEditando}
                   />
@@ -444,35 +526,11 @@ function ListaUsuarios() {
                     value={formUsuario.rol}
                     onChange={(e) => setFormUsuario({...formUsuario, rol: e.target.value})}
                   >
-                    <option value="cliente">Cliente</option>
-                    <option value="agente">Agente</option>
-                    <option value="administrador">Administrador</option>
+                    <option value="CLIENTE">Cliente</option>
+                    <option value="AGENTE">Agente</option>
+                    <option value="JEFE">Jefe</option>
+                    <option value="ADMIN">Administrador</option>
                   </select>
-                </div>
-
-                <div className="campo-grupo">
-                  <label>Empresa</label>
-                  <select
-                    value={formUsuario.empresaId}
-                    onChange={(e) => setFormUsuario({...formUsuario, empresaId: e.target.value})}
-                  >
-                    <option value="">Sin empresa</option>
-                    {empresas.map(empresa => (
-                      <option key={empresa.id} value={empresa.id}>{empresa.nombre}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="campo-fila">
-                <div className="campo-grupo">
-                  <label>Telefono</label>
-                  <input
-                    type="text"
-                    value={formUsuario.telefono}
-                    onChange={(e) => setFormUsuario({...formUsuario, telefono: e.target.value})}
-                    placeholder="+507 6000-0000"
-                  />
                 </div>
 
                 <div className="campo-grupo">
@@ -491,8 +549,9 @@ function ListaUsuarios() {
                 <button type="button" className="boton-cancelar" onClick={() => setMostrarModalUsuario(false)}>
                   Cancelar
                 </button>
-                <button type="submit" className="boton-guardar">
-                  <FaSave /> {usuarioEditando ? 'Guardar Cambios' : 'Crear Usuario'}
+                <button type="submit" className="boton-guardar" disabled={guardando}>
+                  {guardando ? <FaSpinner className="spin" /> : <FaSave />}
+                  {guardando ? 'Guardando...' : (usuarioEditando ? 'Guardar Cambios' : 'Crear Usuario')}
                 </button>
               </div>
             </form>
@@ -530,24 +589,24 @@ function ListaUsuarios() {
                     type="text"
                     value={formEmpresa.ruc}
                     onChange={(e) => setFormEmpresa({...formEmpresa, ruc: e.target.value})}
-                    placeholder="Numero de identificacion fiscal"
+                    placeholder="Número de identificación fiscal"
                   />
                 </div>
               </div>
 
               <div className="campo-grupo">
-                <label>Direccion</label>
+                <label>Dirección</label>
                 <input
                   type="text"
                   value={formEmpresa.direccion}
                   onChange={(e) => setFormEmpresa({...formEmpresa, direccion: e.target.value})}
-                  placeholder="Direccion de la empresa"
+                  placeholder="Dirección de la empresa"
                 />
               </div>
 
               <div className="campo-fila">
                 <div className="campo-grupo">
-                  <label>Telefono</label>
+                  <label>Teléfono</label>
                   <input
                     type="text"
                     value={formEmpresa.telefono}

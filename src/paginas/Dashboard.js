@@ -1,224 +1,168 @@
-//página principal estilo Service Desk
-import React, { useState } from 'react';
-import { FaTicketAlt, FaCheckCircle, FaCog,  } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaTicketAlt, FaClock, FaCheckCircle, FaExclamationTriangle, FaUsers, FaSpinner } from 'react-icons/fa';
+import { ticketService, usuarioService } from '../servicios/supabase';
 import './Dashboard.css';
 
 function Dashboard() {
-  const [visibilidad, setVisibilidad] = useState('Personal');
-  const [cuadroMando, setCuadroMando] = useState('Tablero principal');
-  const [frecuencia, setFrecuencia] = useState('Dia');
-  const [modoGrafico, setModoGrafico] = useState('Grafico');
-  const [categoriaGrafico, setCategoriaGrafico] = useState('Estado');
+  const [estadisticas, setEstadisticas] = useState({
+    totalTickets: 0,
+    ticketsAbiertos: 0,
+    ticketsEnProgreso: 0,
+    ticketsResueltos: 0,
+    ticketsUrgentes: 0,
+    totalAgentes: 0
+  });
+  const [ticketsRecientes, setTicketsRecientes] = useState([]);
+  const [cargando, setCargando] = useState(true);
 
-  //PRUEBAS ERA PARA VER COMO IBA QUEDANDO
-  const ticketsPorAtender = [
-    
-  ];
+  useEffect(() => {
+    cargarDatos();
+  }, []);
+
+  const cargarDatos = async () => {
+    try {
+      setCargando(true);
+      
+      // Cargar todos los tickets
+      const tickets = await ticketService.obtenerTodos();
+      
+      // Calcular estadísticas
+      const stats = {
+        totalTickets: tickets.length,
+        ticketsAbiertos: tickets.filter(t => t.estado === 'ABIERTO').length,
+        ticketsEnProgreso: tickets.filter(t => t.estado === 'EN_PROGRESO').length,
+        ticketsResueltos: tickets.filter(t => t.estado === 'RESUELTO' || t.estado === 'CERRADO').length,
+        ticketsUrgentes: tickets.filter(t => t.prioridad === 'URGENTE' && t.estado !== 'CERRADO').length,
+        totalAgentes: 0
+      };
+
+      // Cargar agentes
+      const agentes = await usuarioService.obtenerAgentes();
+      stats.totalAgentes = agentes?.length || 0;
+
+      setEstadisticas(stats);
+      setTicketsRecientes(tickets.slice(0, 5));
+
+    } catch (error) {
+      console.error('Error al cargar dashboard:', error);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const formatearFecha = (fecha) => {
+    if (!fecha) return '-';
+    return new Date(fecha).toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  if (cargando) {
+    return (
+      <div className="dashboard-cargando">
+        <FaSpinner className="spin" /> Cargando dashboard...
+      </div>
+    );
+  }
 
   return (
-    <div className="dashboard-service">
-      <div className="filtros-superiores">
-        <div className="filtro-grupo">
-          <label>Visibilidad</label>
-          <select value={visibilidad} onChange={(e) => setVisibilidad(e.target.value)}>
-            <option value="Personal">Personal</option>
-            <option value="Equipo">Equipo</option>
-            <option value="Servicio">Servicio</option>
-          </select>
-        </div>
-
-        <div className="filtro-grupo filtro-cuadro">
-          <label>Cuadro de mando</label>
-          <select value={cuadroMando} onChange={(e) => setCuadroMando(e.target.value)}>
-            <option value="Tablero principal">Tablero principal</option>
-            <option value="Tablero tecnico">Tablero tecnico</option>
-            <option value="Tablero gerencial">Tablero gerencial</option>
-          </select>
-        </div>
-
-        <button className="boton-tendencias">Rango de tendencias</button>
-
-        <div className="filtro-grupo">
-          <label>Frecuencia</label>
-          <select value={frecuencia} onChange={(e) => setFrecuencia(e.target.value)}>
-            <option value="Dia">Dia</option>
-            <option value="Semana">Semana</option>
-            <option value="Mes">Mes</option>
-          </select>
-        </div>
-
-        <div className="filtros-acciones">
-          <button className="boton-accion-filtro rojo"></button>
-          <button className="boton-accion-filtro amarillo"></button>
-          <button className="boton-accion-filtro verde"></button>
-        </div>
-      </div>
-
-      <div className="tarjetas-resumen">
-        <div className="tarjeta-resumen verde">
-          <FaCheckCircle className="tarjeta-icono" />
-          <div className="tarjeta-contenido">
-            <span className="tarjeta-texto">Peticiones pendientes de atencion</span>
-            <span className="tarjeta-numero">0</span>
+    <div className="dashboard">
+      <h1>Dashboard</h1>
+      
+      {/* Tarjetas de estadísticas */}
+      <div className="dashboard-cards">
+        <div className="dashboard-card azul">
+          <div className="card-icono"><FaTicketAlt /></div>
+          <div className="card-info">
+            <h3>{estadisticas.totalTickets}</h3>
+            <p>Total Tickets</p>
           </div>
         </div>
 
-        <div className="tarjeta-resumen azul">
-          <FaTicketAlt className="tarjeta-icono" />
-          <div className="tarjeta-contenido">
-            <span className="tarjeta-texto">Tickets Vigentes Totales</span>
+        <div className="dashboard-card naranja">
+          <div className="card-icono"><FaClock /></div>
+          <div className="card-info">
+            <h3>{estadisticas.ticketsAbiertos}</h3>
+            <p>Abiertos</p>
+          </div>
+        </div>
+
+        <div className="dashboard-card morado">
+          <div className="card-icono"><FaClock /></div>
+          <div className="card-info">
+            <h3>{estadisticas.ticketsEnProgreso}</h3>
+            <p>En Progreso</p>
+          </div>
+        </div>
+
+        <div className="dashboard-card verde">
+          <div className="card-icono"><FaCheckCircle /></div>
+          <div className="card-info">
+            <h3>{estadisticas.ticketsResueltos}</h3>
+            <p>Resueltos</p>
+          </div>
+        </div>
+
+        <div className="dashboard-card rojo">
+          <div className="card-icono"><FaExclamationTriangle /></div>
+          <div className="card-info">
+            <h3>{estadisticas.ticketsUrgentes}</h3>
+            <p>Urgentes</p>
+          </div>
+        </div>
+
+        <div className="dashboard-card gris">
+          <div className="card-icono"><FaUsers /></div>
+          <div className="card-info">
+            <h3>{estadisticas.totalAgentes}</h3>
+            <p>Agentes</p>
           </div>
         </div>
       </div>
 
-      <div className="seccion-tabla">
-        <div className="seccion-encabezado">
-          <h3>Tickets por Atender</h3>
-          <button className="boton-config"><FaCog /></button>
-        </div>
-        <div className="tabla-contenedor">
-          <table className="tabla-tickets-dashboard">
+      {/* Tickets recientes */}
+      <div className="dashboard-seccion">
+        <h2>Tickets Recientes</h2>
+        {ticketsRecientes.length === 0 ? (
+          <p className="sin-datos">No hay tickets registrados</p>
+        ) : (
+          <table className="tabla-tickets-recientes">
             <thead>
               <tr>
-                <th>ID Entrada</th>
-                <th>Titulo</th>
-                <th>Empresa</th>
-                <th>Asignado a</th>
-                <th>Fec. creacion</th>
-                <th>Fec Inicial Atencion</th>
+                <th>Folio</th>
+                <th>Asunto</th>
+                <th>Cliente</th>
+                <th>Estado</th>
+                <th>Prioridad</th>
+                <th>Fecha</th>
               </tr>
             </thead>
             <tbody>
-              {ticketsPorAtender.map(ticket => (
+              {ticketsRecientes.map(ticket => (
                 <tr key={ticket.id}>
-                  <td>{ticket.id}</td>
-                  <td>{ticket.titulo}</td>
-                  <td>{ticket.empresa}</td>
-                  <td>{ticket.asignado}</td>
-                  <td>{ticket.fechaCreacion}</td>
-                  <td>{ticket.fechaAtencion || '-'}</td>
+                  <td className="folio">{ticket.folio}</td>
+                  <td>{ticket.asunto}</td>
+                  <td>{ticket.creador?.nombre} {ticket.creador?.apellido}</td>
+                  <td>
+                    <span className={`badge estado-${ticket.estado?.toLowerCase()}`}>
+                      {ticket.estado?.replace('_', ' ')}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={`badge prioridad-${ticket.prioridad?.toLowerCase()}`}>
+                      {ticket.prioridad}
+                    </span>
+                  </td>
+                  <td>{formatearFecha(ticket.fechaCreacion)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      <div className="seccion-graficos">
-        <div className="grafico-contenedor">
-          <div className="seccion-encabezado">
-            <h3>Tickets vigentes</h3>
-            <button className="boton-config"><FaCog /></button>
-          </div>
-          
-          <div className="grafico-cuerpo">
-            <div className="grafico-pastel">
-              <div className="pastel">
-                <div className="pastel-centro">
-                </div>
-              </div>
-            </div>
-            
-            <div className="grafico-controles">
-              <div className="modo-selector">
-                <label>Modo</label>
-                <div className="botones-modo">
-                  <button 
-                    className={modoGrafico === 'Grafico' ? 'activo' : ''}
-                    onClick={() => setModoGrafico('Grafico')}
-                  >
-                    Grafico
-                  </button>
-                  <button 
-                    className={modoGrafico === 'Tabla' ? 'activo' : ''}
-                    onClick={() => setModoGrafico('Tabla')}
-                  >
-                    Tabla
-                  </button>
-                </div>
-              </div>
-              
-              <div className="categoria-selector">
-                <label>Categoria</label>
-                <select value={categoriaGrafico} onChange={(e) => setCategoriaGrafico(e.target.value)}>
-                  <option value="Estado">Estado</option>
-                  <option value="Prioridad">Prioridad</option>
-                  <option value="Categoria">Categoria</option>
-                </select>
-              </div>
-              
-              <div className="leyenda">
-                <div className="leyenda-item">
-                  <span className="color-leyenda azul-claro"></span>
-                  Respondido usuario
-                </div>
-                <div className="leyenda-item">
-                  <span className="color-leyenda amarillo"></span>
-                  Abierta
-                </div>
-                <div className="leyenda-item">
-                  <span className="color-leyenda verde"></span>
-                  En Proceso
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grafico-contenedor ancho-completo">
-          <div className="seccion-encabezado">
-            <h3>Abiertos vs Cerrados</h3>
-            <button className="boton-config"><FaCog /></button>
-          </div>
-          
-          <div className="grafico-barras">
-            <div className="leyenda-barras">
-              <div className="leyenda-item">
-                <span className="color-leyenda azul"></span>
-                Tickets creados
-              </div>
-              <div className="leyenda-item">
-                <span className="color-leyenda amarillo"></span>
-                Tickets cerrados
-              </div>
-            </div>
-            
-            <div className="barras-contenedor">
-              <div className="eje-y">
-                <span>2.0</span>
-                <span>1.5</span>
-                <span>1.0</span>
-                <span>0.5</span>
-              </div>
-              <div className="barras-area">
-                <div className="barra-grupo">
-                  <div className="barra azul" style={{height: '60%'}}></div>
-                  <div className="barra amarilla" style={{height: '0%'}}></div>
-                </div>
-                <div className="barra-grupo">
-                  <div className="barra azul" style={{height: '0%'}}></div>
-                  <div className="barra amarilla" style={{height: '0%'}}></div>
-                </div>
-                <div className="barra-grupo">
-                  <div className="barra azul" style={{height: '0%'}}></div>
-                  <div className="barra amarilla" style={{height: '0%'}}></div>
-                </div>
-                <div className="barra-grupo">
-                  <div className="barra azul" style={{height: '0%'}}></div>
-                  <div className="barra amarilla" style={{height: '0%'}}></div>
-                </div>
-                <div className="barra-grupo">
-                  <div className="barra azul" style={{height: '0%'}}></div>
-                  <div className="barra amarilla" style={{height: '0%'}}></div>
-                </div>
-                <div className="barra-grupo">
-                  <div className="barra azul" style={{height: '0%'}}></div>
-                  <div className="barra amarilla" style={{height: '0%'}}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

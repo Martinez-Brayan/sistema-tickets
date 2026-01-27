@@ -353,8 +353,8 @@ export const categoriaService = {
 
 
 // SERVICIOS DE USUARIOS
-
 export const usuarioService = {
+  // Obtener agentes
   async obtenerAgentes() {
     const { data, error } = await supabase
       .from('users')
@@ -366,6 +366,58 @@ export const usuarioService = {
     return data;
   },
 
+  // Crear usuario
+  async crear(datosUsuario) {
+    const id = crypto.randomUUID();
+
+    const usuario = {
+      id,
+      email: datosUsuario.email,
+      password: datosUsuario.password,
+      nombre: datosUsuario.nombre,
+      apellido: datosUsuario.apellido || '',
+      rol: datosUsuario.rol,
+      departamentoId: datosUsuario.departamentoId || null,
+      activo: true,
+      emailVerificado: false,
+      fechaCreacion: new Date().toISOString(),
+      fechaActualizacion: new Date().toISOString()
+    };
+
+    const { data, error } = await supabase
+      .from('users')
+      .insert(usuario)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Actualizar usuario
+  async actualizar(id, datos) {
+    const { data, error } = await supabase
+      .from('users')
+      .update({ ...datos, fechaActualizacion: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Eliminar usuario
+  async eliminar(id) {
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+  },
+
+  // Obtener todos
   async obtenerTodos() {
     const { data, error } = await supabase
       .from('users')
