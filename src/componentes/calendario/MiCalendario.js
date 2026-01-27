@@ -25,6 +25,7 @@ function MiCalendario() {
 
   const cargarEventos = async () => {
     if (!usuario?.id) return;
+    
     try {
       setCargando(true);
       const inicioMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), 1);
@@ -35,12 +36,25 @@ function MiCalendario() {
         finMes.toISOString(),
         usuario.id
       );
+      
       setEventos(eventosData || []);
     } catch (error) {
       console.error('Error al cargar eventos:', error);
     } finally {
       setCargando(false);
     }
+  };
+
+  const mesAnterior = () => {
+    setFechaActual(new Date(fechaActual.getFullYear(), fechaActual.getMonth() - 1, 1));
+  };
+
+  const mesSiguiente = () => {
+    setFechaActual(new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 1));
+  };
+
+  const irAHoy = () => {
+    setFechaActual(new Date());
   };
 
   const obtenerDiasDelMes = () => {
@@ -56,18 +70,24 @@ function MiCalendario() {
     for (let i = diaInicio - 1; i >= 0; i--) {
       dias.push({ dia: mesAnteriorUltimoDia - i, mesActual: false, fecha: new Date(year, month - 1, mesAnteriorUltimoDia - i) });
     }
+
     for (let i = 1; i <= diasEnMes; i++) {
       dias.push({ dia: i, mesActual: true, fecha: new Date(year, month, i) });
     }
+
     const diasRestantes = 42 - dias.length;
     for (let i = 1; i <= diasRestantes; i++) {
       dias.push({ dia: i, mesActual: false, fecha: new Date(year, month + 1, i) });
     }
+
     return dias;
   };
 
   const obtenerEventosDelDia = (fecha) => {
-    return eventos.filter(evento => new Date(evento.fechaInicio).toDateString() === fecha.toDateString());
+    return eventos.filter(evento => {
+      const fechaEvento = new Date(evento.fechaInicio);
+      return fechaEvento.toDateString() === fecha.toDateString();
+    });
   };
 
   const formatearMesAnio = () => {
@@ -77,97 +97,120 @@ function MiCalendario() {
 
   const esHoy = (fecha) => {
     const hoy = new Date();
-    return fecha.toDateString() === hoy.toDateString();
+    return fecha.getDate() === hoy.getDate() && fecha.getMonth() === hoy.getMonth() && fecha.getFullYear() === hoy.getFullYear();
   };
 
   const formatearHora = (fecha) => {
     return new Date(fecha).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Cálculos de resumen
-  const eventosHoy = eventos.filter(e => new Date(e.fechaInicio).toDateString() === new Date().toDateString());
+  const eventosHoy = eventos.filter(e => {
+    const fechaEvento = new Date(e.fechaInicio);
+    const hoy = new Date();
+    return fechaEvento.toDateString() === hoy.toDateString();
+  });
+
+  const hoyInicio = new Date();
+  hoyInicio.setHours(0, 0, 0, 0);
+  
   const proximosEventos = eventos
-    .filter(e => new Date(e.fechaInicio) >= new Date())
+    .filter(e => new Date(e.fechaInicio) >= hoyInicio)
     .sort((a, b) => new Date(a.fechaInicio) - new Date(b.fechaInicio))
     .slice(0, 5);
 
+  const eventosCampo = eventos.filter(e => e.tipo === 'CAMPO').length;
+  const eventosReunion = eventos.filter(e => e.tipo === 'REUNION').length;
+  const eventosAtencion = eventos.filter(e => e.tipo === 'ATENCION').length;
+
   if (cargando) {
     return (
-      <div className="contenedor-calendario-agente">
-        <div className="cargando">
-          <FaSpinner className="spin" /> Cargando calendario...
+      <div className="mc-contenedor">
+        <div className="mc-cargando">
+          <FaSpinner className="mc-spin" /> Cargando calendario...
         </div>
       </div>
     );
   }
 
   return (
-    <div className="contenedor-calendario-agente">
-      {/* Resumen Superior */}
-      <div className="resumen-dia">
-        <div className="resumen-tarjeta hoy">
-          <FaCalendarAlt className="resumen-icono" />
-          <div className="resumen-info">
+    <div className="mc-contenedor">
+      {/* Tarjetas resumen */}
+      <div className="mc-resumen">
+        <div className="mc-tarjeta mc-tarjeta-hoy">
+          <FaCalendarAlt className="mc-tarjeta-icono" />
+          <div className="mc-tarjeta-info">
             <h3>{eventosHoy.length}</h3>
             <p>Eventos hoy</p>
           </div>
         </div>
-        <div className="resumen-tarjeta campo">
-          <FaMapMarkerAlt className="resumen-icono" />
-          <div className="resumen-info">
-            <h3>{eventos.filter(e => e.tipo === 'CAMPO').length}</h3>
+        <div className="mc-tarjeta mc-tarjeta-campo">
+          <FaMapMarkerAlt className="mc-tarjeta-icono" />
+          <div className="mc-tarjeta-info">
+            <h3>{eventosCampo}</h3>
             <p>Salidas a campo</p>
           </div>
         </div>
-        <div className="resumen-tarjeta reunion">
-          <FaVideo className="resumen-icono" />
-          <div className="resumen-info">
-            <h3>{eventos.filter(e => e.tipo === 'REUNION').length}</h3>
+        <div className="mc-tarjeta mc-tarjeta-reunion">
+          <FaVideo className="mc-tarjeta-icono" />
+          <div className="mc-tarjeta-info">
+            <h3>{eventosReunion}</h3>
             <p>Reuniones</p>
           </div>
         </div>
-        <div className="resumen-tarjeta atencion">
-          <FaBuilding className="resumen-icono" />
-          <div className="resumen-info">
-            <h3>{eventos.filter(e => e.tipo === 'ATENCION').length}</h3>
+        <div className="mc-tarjeta mc-tarjeta-atencion">
+          <FaBuilding className="mc-tarjeta-icono" />
+          <div className="mc-tarjeta-info">
+            <h3>{eventosAtencion}</h3>
             <p>Atención cliente</p>
           </div>
         </div>
       </div>
 
-      <div className="calendario-contenido">
-        <div className="calendario-principal">
-          <div className="calendario-controles">
-            <div className="navegacion-fecha">
-              <button onClick={() => setFechaActual(new Date(fechaActual.getFullYear(), fechaActual.getMonth() - 1, 1))}><FaChevronLeft /></button>
-              <h3>{formatearMesAnio()}</h3>
-              <button onClick={() => setFechaActual(new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 1))}><FaChevronRight /></button>
-            </div>
-            <button className="boton-hoy" onClick={() => setFechaActual(new Date())}>Hoy</button>
+      {/* Contenido principal */}
+      <div className="mc-contenido">
+        {/* Calendario */}
+        <div className="mc-calendario">
+          <div className="mc-calendario-header">
+            <h2>Mi Calendario</h2>
           </div>
 
-          <div className="calendario-grid">
-            <div className="dias-semana">
+          <div className="mc-calendario-nav">
+            <div className="mc-nav-fechas">
+              <button onClick={mesAnterior}><FaChevronLeft /></button>
+              <h3>{formatearMesAnio()}</h3>
+              <button onClick={mesSiguiente}><FaChevronRight /></button>
+            </div>
+            <button className="mc-btn-hoy" onClick={irAHoy}>Hoy</button>
+          </div>
+
+          <div className="mc-grid">
+            <div className="mc-dias-semana">
               {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(dia => (
-                <div key={dia} className="dia-semana">{dia}</div>
+                <div key={dia} className="mc-dia-nombre">{dia}</div>
               ))}
             </div>
 
-            <div className="dias-mes">
+            <div className="mc-dias-mes">
               {obtenerDiasDelMes().map((dia, index) => {
                 const eventosDelDia = obtenerEventosDelDia(dia.fecha);
                 return (
-                  <div key={index} className={`dia-celda ${!dia.mesActual ? 'otro-mes' : ''} ${esHoy(dia.fecha) ? 'hoy' : ''}`}>
-                    <span className="numero-dia">{dia.dia}</span>
-                    <div className="eventos-dia">
+                  <div 
+                    key={index} 
+                    className={`mc-dia ${!dia.mesActual ? 'mc-dia-otro' : ''} ${esHoy(dia.fecha) ? 'mc-dia-hoy' : ''}`}
+                  >
+                    <span className="mc-dia-num">{dia.dia}</span>
+                    <div className="mc-dia-eventos">
                       {eventosDelDia.slice(0, 3).map(evento => (
                         <div 
                           key={evento.id} 
-                          className="evento-punto"
+                          className="mc-evento-punto"
                           style={{ backgroundColor: evento.color || '#3498db' }}
-                          title={evento.titulo}
+                          title={`${evento.titulo} - ${formatearHora(evento.fechaInicio)}`}
                         />
                       ))}
+                      {eventosDelDia.length > 3 && (
+                        <span className="mc-mas">+{eventosDelDia.length - 3}</span>
+                      )}
                     </div>
                   </div>
                 );
@@ -176,23 +219,33 @@ function MiCalendario() {
           </div>
         </div>
 
-        {/* Lista Lateral */}
-        <div className="proximos-eventos">
+        {/* Próximos eventos */}
+        <div className="mc-proximos">
           <h3>Próximos Eventos</h3>
-          <div className="lista-eventos">
-            {proximosEventos.map(evento => (
-              <div key={evento.id} className="evento-item" style={{ borderLeftColor: evento.color || '#3498db' }}>
-                <div className="evento-fecha">
-                  <span className="dia">{new Date(evento.fechaInicio).getDate()}</span>
-                  <span className="mes">{new Date(evento.fechaInicio).toLocaleString('es-ES', { month: 'short' })}</span>
+          <div className="mc-lista-eventos">
+            {proximosEventos.length === 0 ? (
+              <p className="mc-sin-eventos">No tienes eventos próximos</p>
+            ) : (
+              proximosEventos.map(evento => (
+                <div key={evento.id} className="mc-evento-item" style={{ borderLeftColor: evento.color || '#3498db' }}>
+                  <div className="mc-evento-fecha">
+                    <span className="mc-evento-dia">{new Date(evento.fechaInicio).getDate()}</span>
+                    <span className="mc-evento-mes">
+                      {['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'][new Date(evento.fechaInicio).getMonth()]}
+                    </span>
+                  </div>
+                  <div className="mc-evento-detalle">
+                    <h4>{evento.titulo}</h4>
+                    <p><FaClock /> {formatearHora(evento.fechaInicio)}</p>
+                    {evento.ubicacion && <p><FaMapMarkerAlt /> {evento.ubicacion}</p>}
+                    {evento.clienteNombre && <p><FaBuilding /> {evento.clienteNombre}</p>}
+                  </div>
+                  <span className="mc-evento-tipo" style={{ backgroundColor: evento.color || '#3498db' }}>
+                    {evento.tipo}
+                  </span>
                 </div>
-                <div className="evento-detalle">
-                  <h4>{evento.titulo}</h4>
-                  <p><FaClock /> {formatearHora(evento.fechaInicio)}</p>
-                  {evento.clienteNombre && <p><FaBuilding /> {evento.clienteNombre}</p>}
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
