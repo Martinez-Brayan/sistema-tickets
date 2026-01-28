@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  FaArrowLeft, FaSave, FaPaperPlane, FaEnvelope, FaClock, FaUser, FaBuilding, 
-  FaPhone, FaAt, FaHistory, FaPaperclip, FaBold, FaItalic, FaUnderline, 
-  FaStrikethrough, FaListUl, FaListOl, FaAlignLeft, FaAlignCenter, FaAlignRight,
-  FaLink, FaImage, FaTable, FaCode, FaExpand, FaSmile, FaTimes, FaPlus, FaTrash,
-  FaEye, FaEyeSlash, FaSpinner
+  FaArrowLeft, FaPaperPlane, FaClock, FaBuilding, 
+  FaAt, FaHistory, FaPaperclip, FaTimes, FaSpinner,
+  FaDownload, FaTrash, FaFile, FaFilePdf, FaFileImage, FaFileWord, FaFileExcel
 } from 'react-icons/fa';
-import { comentarioService, ticketService } from '../../servicios/supabase';
+import { comentarioService, ticketService, archivoService } from '../../servicios/supabase';
 import { useAutenticacion } from '../../contextos/ContextoAutenticacion';
 import './DetalleTicket.css';
 
@@ -14,16 +12,18 @@ function DetalleTicket({ ticket, onVolver, esCliente = false }) {
   const { usuario } = useAutenticacion();
   const [tabActiva, setTabActiva] = useState('historial');
   const [comentarios, setComentarios] = useState([]);
+  const [adjuntos, setAdjuntos] = useState([]);
   const [cargandoComentarios, setCargandoComentarios] = useState(true);
+  const [cargandoAdjuntos, setCargandoAdjuntos] = useState(true);
   const [enviando, setEnviando] = useState(false);
+  const [subiendoArchivo, setSubiendoArchivo] = useState(false);
   
   const [nuevoMensaje, setNuevoMensaje] = useState({
     contenido: '',
-    esInterno: false,
-    notificarCorreo: false
+    esInterno: false
   });
 
-  const [anexos, setAnexos] = useState([]);
+  const [archivosParaSubir, setArchivosParaSubir] = useState([]);
   const [filtroHistorial, setFiltroHistorial] = useState('todos');
 
   const [datosTicket, setDatosTicket] = useState({
@@ -40,14 +40,13 @@ function DetalleTicket({ ticket, onVolver, esCliente = false }) {
     categoria: ticket?.categoria || null
   });
 
-  // Cargar comentarios al montar
+  // Cargar comentarios y adjuntos al montar
   useEffect(() => {
     cargarComentarios();
+    cargarAdjuntos();
     
-    // Suscribirse a nuevos comentarios en tiempo real
     const subscription = comentarioService.suscribirCambios(ticket.id, (payload) => {
       if (payload.new) {
-        // Recargar comentarios cuando hay uno nuevo
         cargarComentarios();
       }
     });
@@ -69,38 +68,58 @@ function DetalleTicket({ ticket, onVolver, esCliente = false }) {
     }
   };
 
+  const cargarAdjuntos = async () => {
+    try {
+      setCargandoAdjuntos(true);
+      const data = await archivoService.obtenerPorTicket(ticket.id);
+      setAdjuntos(data || []);
+    } catch (error) {
+      console.error('Error al cargar adjuntos:', error);
+    } finally {
+      setCargandoAdjuntos(false);
+    }
+  };
+
   // Enviar comentario
   const enviarComentario = async () => {
-    if (!nuevoMensaje.contenido.trim()) {
-      alert('Escriba un mensaje');
+    if (!nuevoMensaje.contenido.trim() && archivosParaSubir.length === 0) {
+      alert('Escriba un mensaje o adjunte un archivo');
       return;
     }
 
     setEnviando(true);
 
     try {
-      await comentarioService.crear({
-        contenido: nuevoMensaje.contenido,
-        esInterno: nuevoMensaje.esInterno,
-        ticketId: ticket.id
-      }, usuario.id);
+      // Subir archivos primero
+      if (archivosParaSubir.length > 0) {
+        setSubiendoArchivo(true);
+        for (const archivo of archivosParaSubir) {
+          await archivoService.subir(archivo, ticket.id);
+        }
+        setSubiendoArchivo(false);
+        await cargarAdjuntos();
+      }
+
+      // Crear comentario si hay contenido
+      if (nuevoMensaje.contenido.trim()) {
+        await comentarioService.crear({
+          contenido: nuevoMensaje.contenido,
+          esInterno: nuevoMensaje.esInterno,
+          ticketId: ticket.id
+        }, usuario.id);
+      }
 
       // Limpiar formulario
-      setNuevoMensaje({
-        contenido: '',
-        esInterno: false,
-        notificarCorreo: false
-      });
-      setAnexos([]);
-
-      // Recargar comentarios
+      setNuevoMensaje({ contenido: '', esInterno: false });
+      setArchivosParaSubir([]);
       await cargarComentarios();
 
     } catch (error) {
-      console.error('Error al enviar comentario:', error);
-      alert('Error al enviar el mensaje');
+      console.error('Error al enviar:', error);
+      alert('Error al enviar: ' + error.message);
     } finally {
       setEnviando(false);
+      setSubiendoArchivo(false);
     }
   };
 
@@ -114,20 +133,36 @@ function DetalleTicket({ ticket, onVolver, esCliente = false }) {
     }
   };
 
-  // Subir anexo (local por ahora)
-  const subirAnexo = (e) => {
+  // Seleccionar archivos para subir
+  const seleccionarArchivos = (e) => {
     const archivos = Array.from(e.target.files);
-    const nuevosAnexos = archivos.map(archivo => ({
-      id: Date.now() + Math.random(),
-      nombre: archivo.name,
-      tamaño: archivo.size,
-      publico: true
-    }));
-    setAnexos([...anexos, ...nuevosAnexos]);
+    // Validar tamaño (máx 10MB por archivo)
+    const archivosValidos = archivos.filter(a => {
+      if (a.size > 10 * 1024 * 1024) {
+        alert(`El archivo ${a.name} excede el límite de 10MB`);
+        return false;
+      }
+      return true;
+    });
+    setArchivosParaSubir([...archivosParaSubir, ...archivosValidos]);
   };
 
-  const eliminarAnexo = (id) => setAnexos(anexos.filter(a => a.id !== id));
-  const togglePublicoAnexo = (id) => setAnexos(anexos.map(a => a.id === id ? { ...a, publico: !a.publico } : a));
+  const eliminarArchivoParaSubir = (index) => {
+    setArchivosParaSubir(archivosParaSubir.filter((_, i) => i !== index));
+  };
+
+  // Eliminar adjunto de Supabase
+  const eliminarAdjunto = async (adjunto) => {
+    if (!window.confirm('¿Eliminar este archivo?')) return;
+    
+    try {
+      await archivoService.eliminar(adjunto.id, adjunto.url);
+      await cargarAdjuntos();
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+      alert('Error al eliminar archivo');
+    }
+  };
 
   const formatearFecha = (fecha) => {
     if (!fecha) return '-';
@@ -141,9 +176,20 @@ function DetalleTicket({ ticket, onVolver, esCliente = false }) {
   };
 
   const formatearTamaño = (bytes) => {
+    if (!bytes) return '';
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  };
+
+  // Obtener icono según tipo de archivo
+  const getIconoArchivo = (tipo) => {
+    if (!tipo) return <FaFile />;
+    if (tipo.includes('pdf')) return <FaFilePdf className="icono-pdf" />;
+    if (tipo.includes('image')) return <FaFileImage className="icono-imagen" />;
+    if (tipo.includes('word') || tipo.includes('document')) return <FaFileWord className="icono-word" />;
+    if (tipo.includes('excel') || tipo.includes('sheet')) return <FaFileExcel className="icono-excel" />;
+    return <FaFile />;
   };
 
   // Filtrar comentarios
@@ -154,7 +200,6 @@ function DetalleTicket({ ticket, onVolver, esCliente = false }) {
     return true;
   });
 
-  // Obtener clase según rol del autor
   const getClaseAutor = (rol) => {
     if (rol === 'CLIENTE') return 'autor-cliente';
     if (rol === 'AGENTE') return 'autor-agente';
@@ -193,7 +238,7 @@ function DetalleTicket({ ticket, onVolver, esCliente = false }) {
 
       {/* Contenido */}
       <div className="detalle-contenido">
-        {/* Panel izquierdo - Info del cliente */}
+        {/* Panel izquierdo */}
         <div className="panel-cliente">
           <div className="cliente-info">
             <div className="cliente-avatar"><FaBuilding /></div>
@@ -225,11 +270,44 @@ function DetalleTicket({ ticket, onVolver, esCliente = false }) {
               <span>{formatearFecha(datosTicket.fechaCreacion)}</span>
             </div>
           </div>
+
+          {/* Adjuntos en panel lateral */}
+          <div className="adjuntos-lateral">
+            <h4><FaPaperclip /> Archivos adjuntos ({adjuntos.length})</h4>
+            {cargandoAdjuntos ? (
+              <p className="cargando-mini"><FaSpinner className="spin" /> Cargando...</p>
+            ) : adjuntos.length === 0 ? (
+              <p className="sin-adjuntos">Sin archivos adjuntos</p>
+            ) : (
+              <div className="lista-adjuntos">
+                {adjuntos.map(adj => (
+                  <div key={adj.id} className="adjunto-item">
+                    {getIconoArchivo(adj.tipo)}
+                    <div className="adjunto-info">
+                      <a href={adj.url} target="_blank" rel="noopener noreferrer" title={adj.nombre}>
+                        {adj.nombre.length > 20 ? adj.nombre.substring(0, 20) + '...' : adj.nombre}
+                      </a>
+                      <span className="adjunto-tamaño">{formatearTamaño(adj.tamaño)}</span>
+                    </div>
+                    <div className="adjunto-acciones">
+                      <a href={adj.url} download className="btn-descargar" title="Descargar">
+                        <FaDownload />
+                      </a>
+                      {!esCliente && (
+                        <button onClick={() => eliminarAdjunto(adj)} className="btn-eliminar-adj" title="Eliminar">
+                          <FaTrash />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Panel central */}
         <div className="panel-central">
-          {/* Descripción del ticket */}
           <div className="ticket-descripcion-box">
             <h3>Descripción</h3>
             <p>{datosTicket.descripcion || 'Sin descripción'}</p>
@@ -251,11 +329,9 @@ function DetalleTicket({ ticket, onVolver, esCliente = false }) {
             </button>
           </div>
 
-          {/* Contenido de tabs */}
           <div className="chat-layout">
             {tabActiva === 'historial' && (
               <div className="chat-contenedor">
-                {/* Historial de comentarios */}
                 <div className="chat-mensajes">
                   {!esCliente && (
                     <div className="filtro-comentarios">
@@ -287,19 +363,11 @@ function DetalleTicket({ ticket, onVolver, esCliente = false }) {
                             <span className="comentario-autor">
                               {comentario.autor?.nombre} {comentario.autor?.apellido}
                             </span>
-                            <span className="comentario-rol">
-                              {comentario.autor?.rol}
-                            </span>
-                            {comentario.esInterno && (
-                              <span className="badge-interno">INTERNO</span>
-                            )}
-                            <span className="comentario-fecha">
-                              {formatearFecha(comentario.fechaCreacion)}
-                            </span>
+                            <span className="comentario-rol">{comentario.autor?.rol}</span>
+                            {comentario.esInterno && <span className="badge-interno">INTERNO</span>}
+                            <span className="comentario-fecha">{formatearFecha(comentario.fechaCreacion)}</span>
                           </div>
-                          <div className="comentario-contenido">
-                            {comentario.contenido}
-                          </div>
+                          <div className="comentario-contenido">{comentario.contenido}</div>
                         </div>
                       ))}
                     </div>
@@ -330,27 +398,29 @@ function DetalleTicket({ ticket, onVolver, esCliente = false }) {
                       )}
                       <label className="btn-anexo">
                         <FaPaperclip /> Adjuntar
-                        <input type="file" multiple onChange={subirAnexo} hidden />
+                        <input type="file" multiple onChange={seleccionarArchivos} hidden />
                       </label>
                     </div>
                     
                     <button 
                       className="btn-enviar-mensaje" 
                       onClick={enviarComentario}
-                      disabled={enviando || !nuevoMensaje.contenido.trim()}
+                      disabled={enviando || (!nuevoMensaje.contenido.trim() && archivosParaSubir.length === 0)}
                     >
                       {enviando ? <FaSpinner className="spin" /> : <FaPaperPlane />}
-                      {enviando ? 'Enviando...' : 'Enviar'}
+                      {subiendoArchivo ? 'Subiendo...' : enviando ? 'Enviando...' : 'Enviar'}
                     </button>
                   </div>
 
-                  {/* Anexos */}
-                  {anexos.length > 0 && (
-                    <div className="anexos-preview">
-                      {anexos.map(a => (
-                        <div key={a.id} className="anexo-item">
-                          <FaPaperclip /> {a.nombre}
-                          <button onClick={() => eliminarAnexo(a.id)}><FaTimes /></button>
+                  {/* Archivos por subir */}
+                  {archivosParaSubir.length > 0 && (
+                    <div className="archivos-preview">
+                      {archivosParaSubir.map((archivo, index) => (
+                        <div key={index} className="archivo-preview-item">
+                          {getIconoArchivo(archivo.type)}
+                          <span>{archivo.name}</span>
+                          <span className="archivo-tamaño">({formatearTamaño(archivo.size)})</span>
+                          <button onClick={() => eliminarArchivoParaSubir(index)}><FaTimes /></button>
                         </div>
                       ))}
                     </div>
@@ -364,58 +434,28 @@ function DetalleTicket({ ticket, onVolver, esCliente = false }) {
                 <div className="datos-seccion">
                   <h4>Información del ticket</h4>
                   <div className="datos-grid">
-                    <div className="dato-item">
-                      <label>Folio</label>
-                      <span>{datosTicket.folio}</span>
-                    </div>
-                    <div className="dato-item">
-                      <label>Estado</label>
-                      <span>{datosTicket.estado}</span>
-                    </div>
-                    <div className="dato-item">
-                      <label>Prioridad</label>
-                      <span>{datosTicket.prioridad}</span>
-                    </div>
-                    <div className="dato-item">
-                      <label>Categoría</label>
-                      <span>{datosTicket.categoria?.nombre || '-'}</span>
-                    </div>
-                    <div className="dato-item">
-                      <label>Fecha creación</label>
-                      <span>{formatearFecha(datosTicket.fechaCreacion)}</span>
-                    </div>
-                    <div className="dato-item">
-                      <label>Última actualización</label>
-                      <span>{formatearFecha(datosTicket.fechaActualizacion)}</span>
-                    </div>
+                    <div className="dato-item"><label>Folio</label><span>{datosTicket.folio}</span></div>
+                    <div className="dato-item"><label>Estado</label><span>{datosTicket.estado}</span></div>
+                    <div className="dato-item"><label>Prioridad</label><span>{datosTicket.prioridad}</span></div>
+                    <div className="dato-item"><label>Categoría</label><span>{datosTicket.categoria?.nombre || '-'}</span></div>
+                    <div className="dato-item"><label>Fecha creación</label><span>{formatearFecha(datosTicket.fechaCreacion)}</span></div>
+                    <div className="dato-item"><label>Última actualización</label><span>{formatearFecha(datosTicket.fechaActualizacion)}</span></div>
                   </div>
                 </div>
 
                 <div className="datos-seccion">
                   <h4>Cliente</h4>
                   <div className="datos-grid">
-                    <div className="dato-item">
-                      <label>Nombre</label>
-                      <span>{datosTicket.creador?.nombre} {datosTicket.creador?.apellido}</span>
-                    </div>
-                    <div className="dato-item">
-                      <label>Email</label>
-                      <span>{datosTicket.creador?.email}</span>
-                    </div>
+                    <div className="dato-item"><label>Nombre</label><span>{datosTicket.creador?.nombre} {datosTicket.creador?.apellido}</span></div>
+                    <div className="dato-item"><label>Email</label><span>{datosTicket.creador?.email}</span></div>
                   </div>
                 </div>
 
                 <div className="datos-seccion">
                   <h4>Agente asignado</h4>
                   <div className="datos-grid">
-                    <div className="dato-item">
-                      <label>Nombre</label>
-                      <span>{datosTicket.agente ? `${datosTicket.agente.nombre} ${datosTicket.agente.apellido}` : 'Sin asignar'}</span>
-                    </div>
-                    <div className="dato-item">
-                      <label>Email</label>
-                      <span>{datosTicket.agente?.email || '-'}</span>
-                    </div>
+                    <div className="dato-item"><label>Nombre</label><span>{datosTicket.agente ? `${datosTicket.agente.nombre} ${datosTicket.agente.apellido}` : 'Sin asignar'}</span></div>
+                    <div className="dato-item"><label>Email</label><span>{datosTicket.agente?.email || '-'}</span></div>
                   </div>
                 </div>
               </div>

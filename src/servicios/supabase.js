@@ -62,8 +62,6 @@ if (!passwordValido) {
   }
 };
 
-
-
 // SERVICIOS DE TICKETS
 
 export const ticketService = {
@@ -147,10 +145,10 @@ export const ticketService = {
       .from('tickets')
       .select(`
         *,
-        creador:creadorId(id, nombre, apellido, email),
-        agente:agenteId(id, nombre, apellido),
-        categoria:categoriaId(id, nombre, color)
-      `)
+      creador:users!tickets_creador_fkey(id, nombre, apellido, email),
+      agente:users!tickets_agente_fkey(id, nombre, apellido),
+      categoria:categoriaId(id, nombre, color)
+`)
       .order('fechaCreacion', { ascending: false });
 
     if (filtros.estado) query = query.eq('estado', filtros.estado);
@@ -166,12 +164,12 @@ export const ticketService = {
   async obtenerPorId(id) {
     const { data, error } = await supabase
       .from('tickets')
-      .select(`
-        *,
-        creador:creadorId(id, nombre, apellido, email),
-        agente:agenteId(id, nombre, apellido, email),
-        categoria:categoriaId(id, nombre, color)
-      `)
+.select(`
+  *,
+  creador:users!tickets_creador_fkey(id, nombre, apellido, email),
+  agente:users!tickets_agente_fkey(id, nombre, apellido, email),
+  categoria:categoriaId(id, nombre, color)
+`)
       .eq('id', id)
       .single();
 
@@ -512,32 +510,34 @@ export const usuarioService = {
   },
 
   // Crear usuario
-  async crear(datosUsuario) {
-    const id = crypto.randomUUID();
+  // Crear usuario
+async crear(datosUsuario) {
+  const id = crypto.randomUUID();
 
-    const usuario = {
-      id,
-      email: datosUsuario.email,
-      password: datosUsuario.password,
-      nombre: datosUsuario.nombre,
-      apellido: datosUsuario.apellido || '',
-      rol: datosUsuario.rol,
-      departamentoId: datosUsuario.departamentoId || null,
-      activo: true,
-      emailVerificado: false,
-      fechaCreacion: new Date().toISOString(),
-      fechaActualizacion: new Date().toISOString()
-    };
+  const usuario = {
+    id,
+    email: datosUsuario.email,
+    password: datosUsuario.password,
+    nombre: datosUsuario.nombre,
+    apellido: datosUsuario.apellido || '',
+    rol: datosUsuario.rol,
+    empresa: datosUsuario.empresa || null,
+    departamentoId: datosUsuario.departamentoId || null,
+    activo: datosUsuario.activo !== undefined ? datosUsuario.activo : true,
+    emailVerificado: false,
+    fechaCreacion: new Date().toISOString(),
+    fechaActualizacion: new Date().toISOString()
+  };
 
-    const { data, error } = await supabase
-      .from('users')
-      .insert(usuario)
-      .select()
-      .single();
+  const { data, error } = await supabase
+    .from('users')
+    .insert(usuario)
+    .select()
+    .single();
 
-    if (error) throw error;
-    return data;
-  },
+  if (error) throw error;
+  return data;
+},
 
   // Actualizar usuario
   async actualizar(id, datos) {
@@ -558,11 +558,10 @@ export const usuarioService = {
       .from('users')
       .delete()
       .eq('id', id);
-
     if (error) throw error;
   },
 
-  // Obtener todos
+// Obtener todos
   async obtenerTodos() {
     const { data, error } = await supabase
       .from('users')
@@ -571,5 +570,85 @@ export const usuarioService = {
 
     if (error) throw error;
     return data;
+  }
+};
+
+// SERVICIOS DE ARCHIVOS (STORAGE)
+export const archivoService = {
+  // Subir archivo
+  async subir(archivo, ticketId) {
+    const extension = archivo.name.split('.').pop();
+    const nombreArchivo = `${ticketId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${extension}`;
+    
+    const { data, error } = await supabase.storage
+      .from('adjuntos')
+      .upload(nombreArchivo, archivo);
+
+    if (error) throw error;
+
+    // Obtener URL pública
+    const { data: urlData } = supabase.storage
+      .from('adjuntos')
+      .getPublicUrl(nombreArchivo);
+
+    // Guardar referencia en la tabla adjuntos
+    const adjunto = {
+      id: crypto.randomUUID(),
+      ticketId,
+      nombre: archivo.name,
+      tipo: archivo.type,
+      tamano: archivo.size,
+      url: urlData.publicUrl,
+      fechaCreacion: new Date().toISOString()
+    };
+
+    const { data: adjuntoData, error: adjuntoError } = await supabase
+      .from('adjuntos')
+      .insert(adjunto)
+      .select()
+      .single();
+
+    if (adjuntoError) throw adjuntoError;
+
+    return adjuntoData;
+  },
+
+  // Obtener adjuntos de un ticket
+  async obtenerPorTicket(ticketId) {
+    const { data, error } = await supabase
+      .from('adjuntos')
+      .select('*')
+      .eq('ticketId', ticketId)
+      .order('fechaCreacion', { ascending: false });
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Eliminar archivo
+  async eliminar(id, url) {
+    const path = url.split('/adjuntos/')[1];
+    
+    if (path) {
+      await supabase.storage
+        .from('adjuntos')
+        .remove([path]);
+    }
+
+    const { error } = await supabase
+      .from('adjuntos')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+  },
+
+  // Formatear tamaño
+  formatearTamaño(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 };

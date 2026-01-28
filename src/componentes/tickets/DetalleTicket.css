@@ -991,3 +991,141 @@
   font-size: 14px;
   color: #333;
 }
+
+/* Adjuntos en panel lateral */
+.adjuntos-lateral {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.adjuntos-lateral h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.cargando-mini {
+  font-size: 12px;
+  color: #666;
+}
+
+.sin-adjuntos {
+  font-size: 13px;
+  color: #999;
+  text-align: center;
+  padding: 10px;
+}
+
+.lista-adjuntos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.adjunto-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.adjunto-item svg {
+  font-size: 18px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.icono-pdf { color: #e74c3c !important; }
+.icono-imagen { color: #3498db !important; }
+.icono-word { color: #2980b9 !important; }
+.icono-excel { color: #27ae60 !important; }
+
+.adjunto-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.adjunto-info a {
+  display: block;
+  color: #333;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.adjunto-info a:hover {
+  color: #3498db;
+}
+
+.adjunto-tamaño {
+  display: block;
+  font-size: 11px;
+  color: #999;
+}
+
+.adjunto-acciones {
+  display: flex;
+  gap: 5px;
+}
+
+.btn-descargar, .btn-eliminar-adj {
+  padding: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  border-radius: 4px;
+}
+
+.btn-descargar:hover { color: #3498db; background: #e8f4fd; }
+.btn-eliminar-adj:hover { color: #e74c3c; background: #fdeaea; }
+
+/* Archivos por subir (preview) */
+.archivos-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px;
+  background: #f0f7ff;
+  border-radius: 6px;
+}
+
+.archivo-preview-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: white;
+  border-radius: 4px;
+  font-size: 12px;
+  border: 1px solid #ddd;
+}
+
+.archivo-preview-item svg:first-child {
+  font-size: 16px;
+}
+
+.archivo-tamaño {
+  color: #999;
+}
+
+.archivo-preview-item button {
+  padding: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+}
+
+.archivo-preview-item button:hover {
+  color: #e74c3c;
+}

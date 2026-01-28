@@ -9,6 +9,7 @@
 .usuarios-tabs {
   display: flex;
   gap: 10px;
+  margin-left: 25px;
   margin-bottom: 25px;
   border-bottom: 2px solid #e0e0e0;
   padding-bottom: 15px;

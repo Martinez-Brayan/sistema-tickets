@@ -41,12 +41,20 @@ function Reportes() {
       { prioridad: 'Baja', cantidad: 61 }
     ],
 
+    ticketDepartamento: [
+      { departamento : 'Soporte Técnico', cantidad: 72 },
+      { departamento : 'Ventas', cantidad: 34 },
+      { departamento : 'Administración', cantidad: 25 },
+      { departamento : 'Recursos Humanos', cantidad: 15 }
+
+    ],
+
     ticketsPorCategoria: [
       { categoria: 'Hardware', cantidad: 34 },
       { categoria: 'Software', cantidad: 52 },
       { categoria: 'Red', cantidad: 28 },
       { categoria: 'Accesos', cantidad: 22 },
-      { categoria: 'Otros', cantidad: 20 }
+      { categoria: 'Otros', cantidad: 20 }      
     ],
 
     empresasConMasTickets: [

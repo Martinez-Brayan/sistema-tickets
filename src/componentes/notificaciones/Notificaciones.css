@@ -218,3 +218,20 @@
   padding: 30px;
   color: #666;
 }
+
+/* Iconos por tipo */
+.notif-icono.nuevo {
+  color: #27ae60;
+}
+
+.notif-icono.asignado {
+  color: #3498db;
+}
+
+.notif-icono.respuesta {
+  color: #9b59b6;
+}
+
+.notif-icono.evento {
+  color: #f39c12;
+}

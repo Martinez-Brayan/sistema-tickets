@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaPlus, FaSearch, FaEdit, FaTrash, FaUserShield, FaUser, FaHeadset, FaTimes, FaSave, FaSpinner } from 'react-icons/fa';
-import { usuarioService } from '../../servicios/supabase';
+import { usuarioService, supabase } from '../../servicios/supabase';
 import './ListaUsuarios.css';
 
 function ListaUsuarios() {
@@ -12,6 +12,7 @@ function ListaUsuarios() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [usuarioEditando, setUsuarioEditando] = useState(null);
   const [usuarios, setUsuarios] = useState([]);
+  const [departamentos, setDepartamentos] = useState([]);
 
   const [formUsuario, setFormUsuario] = useState({
     nombre: '',
@@ -19,14 +20,14 @@ function ListaUsuarios() {
     email: '',
     password: '',
     rol: 'CLIENTE',
-    telefono: '',
     empresa: '',
-    direccion: '',
+    departamentoId: '',
     activo: true
   });
 
   useEffect(() => {
     cargarUsuarios();
+    cargarDepartamentos();
   }, []);
 
   const cargarUsuarios = async () => {
@@ -38,6 +39,18 @@ function ListaUsuarios() {
       console.error('Error al cargar usuarios:', error);
     } finally {
       setCargando(false);
+    }
+  };
+
+  const cargarDepartamentos = async () => {
+    try {
+      const { data } = await supabase
+        .from('departamentos')
+        .select('*')
+        .eq('activo', true);
+      setDepartamentos(data || []);
+    } catch (error) {
+      console.error('Error al cargar departamentos:', error);
     }
   };
 
@@ -56,9 +69,8 @@ function ListaUsuarios() {
       email: '',
       password: '',
       rol: 'CLIENTE',
-      telefono: '',
       empresa: '',
-      direccion: '',
+      departamentoId: '',
       activo: true
     });
     setMostrarModal(true);
@@ -72,9 +84,8 @@ function ListaUsuarios() {
       email: usuario.email,
       password: '',
       rol: usuario.rol,
-      telefono: usuario.telefono || '',
       empresa: usuario.empresa || '',
-      direccion: usuario.direccion || '',
+      departamentoId: usuario.departamentoId || '',
       activo: usuario.activo
     });
     setMostrarModal(true);
@@ -93,6 +104,21 @@ function ListaUsuarios() {
       return;
     }
 
+    // Validar departamento para agentes
+    if ((formUsuario.rol === 'AGENTE' || formUsuario.rol === 'JEFE') && !formUsuario.departamentoId) {
+      alert('Seleccione un departamento');
+      return;
+    }
+
+    // Verificar si el email ya existe (solo para nuevos usuarios)
+    if (!usuarioEditando) {
+      const emailExiste = usuarios.find(u => u.email.toLowerCase() === formUsuario.email.toLowerCase());
+      if (emailExiste) {
+        alert('Ya existe un usuario con ese correo electrónico');
+        return;
+      }
+    }
+
     setGuardando(true);
 
     try {
@@ -102,9 +128,8 @@ function ListaUsuarios() {
           apellido: formUsuario.apellido,
           email: formUsuario.email,
           rol: formUsuario.rol,
-          telefono: formUsuario.telefono,
-          empresa: formUsuario.empresa,
-          direccion: formUsuario.direccion,
+          empresa: formUsuario.rol === 'CLIENTE' ? formUsuario.empresa : null,
+          departamentoId: (formUsuario.rol === 'AGENTE' || formUsuario.rol === 'JEFE') ? formUsuario.departamentoId : null,
           activo: formUsuario.activo
         };
         
@@ -120,9 +145,8 @@ function ListaUsuarios() {
           email: formUsuario.email,
           password: formUsuario.password,
           rol: formUsuario.rol,
-          telefono: formUsuario.telefono,
-          empresa: formUsuario.empresa,
-          direccion: formUsuario.direccion,
+          empresa: formUsuario.rol === 'CLIENTE' ? formUsuario.empresa : null,
+          departamentoId: (formUsuario.rol === 'AGENTE' || formUsuario.rol === 'JEFE') ? formUsuario.departamentoId : null,
           activo: formUsuario.activo
         });
       }
@@ -138,14 +162,29 @@ function ListaUsuarios() {
   };
 
   const eliminarUsuario = async (id) => {
-    if (!window.confirm('¿Eliminar este usuario?')) return;
+    const usuario = usuarios.find(u => u.id === id);
+    const mensaje = usuario?.activo 
+      ? '¿Desactivar este usuario? (No se eliminará, solo se marcará como inactivo)'
+      : '¿Eliminar permanentemente este usuario?';
+    
+    if (!window.confirm(mensaje)) return;
 
     try {
-      await usuarioService.eliminar(id);
+      if (usuario?.activo) {
+        // Solo desactivar
+        await usuarioService.actualizar(id, { activo: false });
+      } else {
+        // Intentar eliminar si ya está inactivo
+        try {
+          await usuarioService.eliminar(id);
+        } catch (deleteError) {
+          console.log('Usuario ya desactivado');
+        }
+      }
       await cargarUsuarios();
     } catch (error) {
-      console.error('Error al eliminar:', error);
-      alert('Error al eliminar usuario');
+      console.error('Error:', error);
+      alert('Error al procesar la solicitud');
     }
   };
 
@@ -171,6 +210,11 @@ function ListaUsuarios() {
       'CLIENTE': 'Cliente'
     };
     return etiquetas[rol] || rol;
+  };
+
+  const obtenerNombreDepartamento = (deptId) => {
+    const dept = departamentos.find(d => d.id === deptId);
+    return dept ? dept.nombre : '-';
   };
 
   return (
@@ -220,9 +264,8 @@ function ListaUsuarios() {
             <thead>
               <tr>
                 <th>Usuario</th>
-                <th>Empresa</th>
+                <th>Empresa / Depto</th>
                 <th>Rol</th>
-                <th>Teléfono</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>
@@ -241,14 +284,18 @@ function ListaUsuarios() {
                       </div>
                     </div>
                   </td>
-                  <td>{usuario.empresa || '-'}</td>
+                  <td>
+                    {usuario.rol === 'CLIENTE' 
+                      ? (usuario.empresa || '-')
+                      : obtenerNombreDepartamento(usuario.departamentoId)
+                    }
+                  </td>
                   <td>
                     <div className="usuario-rol">
                       {obtenerIconoRol(usuario.rol)}
                       <span>{obtenerEtiquetaRol(usuario.rol)}</span>
                     </div>
                   </td>
-                  <td>{usuario.telefono || '-'}</td>
                   <td>
                     <span className={`estado-badge ${usuario.activo ? 'activo' : 'inactivo'}`}>
                       {usuario.activo ? 'Activo' : 'Inactivo'}
@@ -340,50 +387,46 @@ function ListaUsuarios() {
                   </select>
                 </div>
                 <div className="campo-grupo">
-                  <label>Teléfono</label>
-                  <input
-                    type="text"
-                    value={formUsuario.telefono}
-                    onChange={(e) => setFormUsuario({...formUsuario, telefono: e.target.value})}
-                    placeholder="+507 6000-0000"
-                  />
+                  <label>Estado</label>
+                  <select
+                    value={formUsuario.activo}
+                    onChange={(e) => setFormUsuario({...formUsuario, activo: e.target.value === 'true'})}
+                  >
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                  </select>
                 </div>
               </div>
 
               {/* Campos adicionales para clientes */}
               {formUsuario.rol === 'CLIENTE' && (
-                <>
-                  <div className="campo-grupo">
-                    <label>Empresa / Compañía</label>
-                    <input
-                      type="text"
-                      value={formUsuario.empresa}
-                      onChange={(e) => setFormUsuario({...formUsuario, empresa: e.target.value})}
-                      placeholder="Nombre de la empresa"
-                    />
-                  </div>
-                  <div className="campo-grupo">
-                    <label>Dirección</label>
-                    <input
-                      type="text"
-                      value={formUsuario.direccion}
-                      onChange={(e) => setFormUsuario({...formUsuario, direccion: e.target.value})}
-                      placeholder="Dirección de la empresa"
-                    />
-                  </div>
-                </>
+                <div className="campo-grupo">
+                  <label>Empresa / Compañía</label>
+                  <input
+                    type="text"
+                    value={formUsuario.empresa}
+                    onChange={(e) => setFormUsuario({...formUsuario, empresa: e.target.value})}
+                    placeholder="Nombre de la empresa"
+                  />
+                </div>
               )}
 
-              <div className="campo-grupo">
-                <label>Estado</label>
-                <select
-                  value={formUsuario.activo}
-                  onChange={(e) => setFormUsuario({...formUsuario, activo: e.target.value === 'true'})}
-                >
-                  <option value="true">Activo</option>
-                  <option value="false">Inactivo</option>
-                </select>
-              </div>
+              {/* Departamento para agentes y jefes */}
+              {(formUsuario.rol === 'AGENTE' || formUsuario.rol === 'JEFE') && (
+                <div className="campo-grupo">
+                  <label>Departamento *</label>
+                  <select
+                    value={formUsuario.departamentoId}
+                    onChange={(e) => setFormUsuario({...formUsuario, departamentoId: e.target.value})}
+                    required
+                  >
+                    <option value="">-- Seleccionar departamento --</option>
+                    {departamentos.map(dept => (
+                      <option key={dept.id} value={dept.id}>{dept.nombre}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div className="modal-acciones">
                 <button type="button" className="boton-cancelar" onClick={() => setMostrarModal(false)}>
