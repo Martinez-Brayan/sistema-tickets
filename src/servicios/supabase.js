@@ -62,6 +62,116 @@ if (!passwordValido) {
   }
 };
 
+// =============================================
+// SERVICIO DE EMAIL
+
+export const emailService = {
+  // Enviar email
+  async enviar(to, subject, html) {
+    const { data, error } = await supabase.functions.invoke('enviar-email', {
+      body: { to, subject, html }
+    });
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Notificar ticket asignado
+  async notificarTicketAsignado(ticket, agente) {
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #3498db; color: white; padding: 20px; text-align: center;">
+          <h1 style="margin: 0;">HelpDesk</h1>
+        </div>
+        <div style="padding: 20px; background: #f9f9f9;">
+          <h2>Nuevo Ticket Asignado</h2>
+          <p>Hola <strong>${agente.nombre}</strong>,</p>
+          <p>Se te ha asignado un nuevo ticket:</p>
+          <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd; background: #f5f5f5;"><strong>Folio:</strong></td>
+              <td style="padding: 10px; border: 1px solid #ddd;">${ticket.folio}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd; background: #f5f5f5;"><strong>Asunto:</strong></td>
+              <td style="padding: 10px; border: 1px solid #ddd;">${ticket.asunto}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd; background: #f5f5f5;"><strong>Prioridad:</strong></td>
+              <td style="padding: 10px; border: 1px solid #ddd;">${ticket.prioridad}</td>
+            </tr>
+          </table>
+          <p>Por favor, atiende este ticket lo antes posible.</p>
+          <a href="#" style="display: inline-block; background: #3498db; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;">Ver Ticket</a>
+        </div>
+        <div style="padding: 15px; background: #333; color: #999; text-align: center; font-size: 12px;">
+          Este es un mensaje automático del sistema HelpDesk
+        </div>
+      </div>
+    `;
+
+    return this.enviar(agente.email, `Ticket Asignado: ${ticket.folio} - ${ticket.asunto}`, html);
+  },
+
+  // Notificar nuevo comentario
+  async notificarNuevoComentario(ticket, destinatario, comentario) {
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #3498db; color: white; padding: 20px; text-align: center;">
+          <h1 style="margin: 0;">HelpDesk</h1>
+        </div>
+        <div style="padding: 20px; background: #f9f9f9;">
+          <h2>Nueva Respuesta en Ticket</h2>
+          <p>Hola <strong>${destinatario.nombre}</strong>,</p>
+          <p>Hay una nueva respuesta en el ticket <strong>${ticket.folio}</strong>:</p>
+          <div style="background: white; border-left: 4px solid #3498db; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; color: #666;">${comentario.contenido}</p>
+          </div>
+          <a href="#" style="display: inline-block; background: #3498db; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;">Ver Conversación</a>
+        </div>
+        <div style="padding: 15px; background: #333; color: #999; text-align: center; font-size: 12px;">
+          Este es un mensaje automático del sistema HelpDesk
+        </div>
+      </div>
+    `;
+
+    return this.enviar(destinatario.email, `Nueva respuesta: ${ticket.folio} - ${ticket.asunto}`, html);
+  },
+
+  // Notificar ticket creado (al cliente)
+  async notificarTicketCreado(ticket, cliente) {
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #27ae60; color: white; padding: 20px; text-align: center;">
+          <h1 style="margin: 0;">HelpDesk</h1>
+        </div>
+        <div style="padding: 20px; background: #f9f9f9;">
+          <h2>Ticket Creado Exitosamente</h2>
+          <p>Hola <strong>${cliente.nombre}</strong>,</p>
+          <p>Tu ticket ha sido registrado correctamente:</p>
+          <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd; background: #f5f5f5;"><strong>Número de Ticket:</strong></td>
+              <td style="padding: 10px; border: 1px solid #ddd;">${ticket.folio}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd; background: #f5f5f5;"><strong>Asunto:</strong></td>
+              <td style="padding: 10px; border: 1px solid #ddd;">${ticket.asunto}</td>
+            </tr>
+          </table>
+          <p>Te notificaremos cuando un agente atienda tu solicitud.</p>
+        </div>
+        <div style="padding: 15px; background: #333; color: #999; text-align: center; font-size: 12px;">
+          Este es un mensaje automático del sistema HelpDesk
+        </div>
+      </div>
+    `;
+
+    return this.enviar(cliente.email, `Ticket Recibido: ${ticket.folio}`, html);
+  }
+};
+
+
 // SERVICIOS DE TICKETS
 
 export const ticketService = {
@@ -109,10 +219,26 @@ export const ticketService = {
 
     if (error) throw error;
 
-    // Crear notificaciones para admins y agentes
-    await this.notificarNuevoTicket(data);
+// Crear notificaciones para admins y agentes
+await this.notificarNuevoTicket(data);
 
-    return data;
+// Enviar email de confirmación al cliente
+try {
+  const { data: cliente } = await supabase
+    .from('users')
+    .select('nombre, email')
+    .eq('id', creadorId)
+    .single();
+  
+  if (cliente?.email) {
+    await emailService.notificarTicketCreado(data, cliente);
+    console.log('Email de confirmación enviado a:', cliente.email);
+  }
+} catch (emailError) {
+  console.error('Error al enviar email de confirmación:', emailError);
+}
+
+return data;
   },
 
   // Notificar nuevo ticket
@@ -178,17 +304,38 @@ export const ticketService = {
   },
 
   // Actualizar ticket
-  async actualizar(id, datos) {
-    const { data, error } = await supabase
-      .from('tickets')
-      .update({ ...datos, fechaActualizacion: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .single();
+  // Actualizar ticket
+async actualizar(id, datos) {
+  // Obtener ticket actual para comparar
+  const { data: ticketAnterior } = await supabase
+    .from('tickets')
+    .select('*, agente:users!tickets_agente_fkey(id, nombre, email)')
+    .eq('id', id)
+    .single();
 
-    if (error) throw error;
-    return data;
-  },
+  const { data, error } = await supabase
+    .from('tickets')
+    .update({ ...datos, fechaActualizacion: new Date().toISOString() })
+    .eq('id', id)
+    .select('*, agente:users!tickets_agente_fkey(id, nombre, email)')
+    .single();
+
+  if (error) throw error;
+
+  // Si se asignó un nuevo agente, enviar email
+  if (datos.agenteId && datos.agenteId !== ticketAnterior?.agenteId && data.agente?.email) {
+    try {
+      await emailService.notificarTicketAsignado(data, data.agente);
+      console.log('Email enviado al agente:', data.agente.email);
+    } catch (emailError) {
+      console.error('Error al enviar email:', emailError);
+      // No lanzar error para no afectar la operación principal
+    }
+  }
+
+  return data;
+},
+
 
   // Eliminar ticket
   async eliminar(id) {
@@ -214,39 +361,81 @@ export const ticketService = {
 
 export const comentarioService = {
   // Crear comentario
-  async crear(datosComentario, autorId) {
-    const comentario = {
-      id: crypto.randomUUID(),
-      contenido: datosComentario.contenido,
-      esInterno: datosComentario.esInterno || false,
-      ticketId: datosComentario.ticketId,
-      autorId,
-      fechaCreacion: new Date().toISOString(),
-      fechaActualizacion: new Date().toISOString()
-    };
+  // Crear comentario
+async crear(datosComentario, autorId) {
+  const comentario = {
+    id: crypto.randomUUID(),
+    contenido: datosComentario.contenido,
+    esInterno: datosComentario.esInterno || false,
+    ticketId: datosComentario.ticketId,
+    autorId,
+    fechaCreacion: new Date().toISOString(),
+    fechaActualizacion: new Date().toISOString()
+  };
 
-    const { data, error } = await supabase
-      .from('comentarios')
-      .insert(comentario)
-      .select('*, autor:autorId(id, nombre, apellido, rol)')
-      .single();
+  const { data, error } = await supabase
+    .from('comentarios')
+    .insert(comentario)
+    .select('*, autor:users!comentarios_autor_fkey(id, nombre, apellido, rol)')
+    .single();
 
-    if (error) throw error;
+  if (error) throw error;
 
-    // Actualizar fecha del ticket
-    await supabase
-      .from('tickets')
-      .update({ fechaActualizacion: new Date().toISOString() })
-      .eq('id', datosComentario.ticketId);
+  // Actualizar fecha del ticket
+  await supabase
+    .from('tickets')
+    .update({ fechaActualizacion: new Date().toISOString() })
+    .eq('id', datosComentario.ticketId);
 
-    return data;
-  },
+  // Enviar email si no es comentario interno
+  if (!datosComentario.esInterno) {
+    try {
+      // Obtener info del ticket y destinatario
+      const { data: ticket } = await supabase
+        .from('tickets')
+        .select(`
+          *,
+          creador:users!tickets_creador_fkey(id, nombre, email),
+          agente:users!tickets_agente_fkey(id, nombre, email)
+        `)
+        .eq('id', datosComentario.ticketId)
+        .single();
+
+      if (ticket) {
+        // Si el autor es el cliente, notificar al agente
+        // Si el autor es el agente/admin, notificar al cliente
+        const { data: autor } = await supabase
+          .from('users')
+          .select('rol')
+          .eq('id', autorId)
+          .single();
+
+        let destinatario = null;
+        
+        if (autor?.rol === 'CLIENTE' && ticket.agente?.email) {
+          destinatario = ticket.agente;
+        } else if (autor?.rol !== 'CLIENTE' && ticket.creador?.email) {
+          destinatario = ticket.creador;
+        }
+
+        if (destinatario) {
+          console.log('Enviando email a:', destinatario.email);
+          await emailService.notificarNuevoComentario(ticket, destinatario, data);
+        }
+      }
+    } catch (emailError) {
+      console.error('Error al enviar email de comentario:', emailError);
+    }
+  }
+
+  return data;
+},
 
   // Obtener comentarios de un ticket
   async obtenerPorTicket(ticketId) {
     const { data, error } = await supabase
       .from('comentarios')
-      .select('*, autor:autorId(id, nombre, apellido, rol)')
+      .select('*, autor:users!comentarios_autor_fkey(id, nombre, apellido, rol)')
       .eq('ticketId', ticketId)
       .order('fechaCreacion', { ascending: true });
 
@@ -265,7 +454,6 @@ export const comentarioService = {
       .subscribe();
   }
 };
-
 
 // SERVICIOS DE NOTIFICACIONES
 
